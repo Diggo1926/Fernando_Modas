@@ -1,7 +1,7 @@
 import { formatarMoeda, calcularMargem, corQuantidade } from '../../utils/formatters';
 
 export default function CardProduto({ produto, onEditar, onRepor, onDeletar }) {
-  const margem = calcularMargem(produto.precoCompra, produto.precoVenda);
+  const margem = calcularMargem(produto.precoCusto, produto.precoVenda);
 
   return (
     <div

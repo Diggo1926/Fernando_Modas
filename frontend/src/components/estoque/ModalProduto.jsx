@@ -73,7 +73,7 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
                   : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--texto-leve)' }}>Sem foto</div>
                 }
               </div>
-              <label style={{ flex: 1, padding: '10px 16px', border: '1px dashed var(--borda)', borderRadius: 6, cursor: 'pointer', fontSize: 12, color: 'var(--texto-md)', textAlign: 'center', display: 'block', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <label style={{ flex: 1, padding: '10px 16px', border: '1px dashed var(--borda)', borderRadius: 6, cursor: 'pointer', fontSize: 12, color: 'var(--texto-md)', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 48 }}>
                 Clique para selecionar (JPG, PNG ou WebP, máx. 5MB)
                 <input type="file" accept="image/jpeg,image/png,image/webp" style={{ display: 'none' }} onChange={handleFoto} />
               </label>

@@ -5,7 +5,7 @@ import ModalHistorico from './ModalHistorico';
 export default function UltimasVendas({ vendas, onCancelar, carregando }) {
   const [modalAberto, setModalAberto] = useState(false);
 
-  const recentes = vendas.filter((v) => !v.cancelada).slice(0, 5);
+  const recentes = (vendas ?? []).filter((v) => !v.cancelada).slice(0, 5);
 
   return (
     <div className="card" style={{ padding: 20 }}>

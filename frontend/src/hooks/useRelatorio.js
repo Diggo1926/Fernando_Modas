@@ -28,7 +28,7 @@ export function useRelatorio() {
   const buscarFechamentos = useCallback(async () => {
     try {
       const { data } = await api.get('/relatorio/fechamentos');
-      setFechamentos(data);
+      setFechamentos(Array.isArray(data) ? data : []);
     } catch (err) {
       toast.error(err.message);
     }

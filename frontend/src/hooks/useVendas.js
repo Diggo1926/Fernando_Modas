@@ -10,7 +10,7 @@ export function useVendas() {
   const buscarVendas = useCallback(async () => {
     try {
       const { data } = await api.get('/caixa/vendas');
-      setVendas(data);
+      setVendas(Array.isArray(data) ? data : []);
     } catch (err) {
       toast.error(err.message);
     }

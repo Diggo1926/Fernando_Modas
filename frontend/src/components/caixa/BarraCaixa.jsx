@@ -7,7 +7,7 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando }) {
 
   // Calcula totais usando a estrutura normalizada VendaPagamento
   const totais = { PIX: 0, DINHEIRO: 0, DEBITO: 0, CREDITO: 0, geral: 0 };
-  for (const v of vendas.filter((v) => !v.cancelada)) {
+  for (const v of (vendas ?? []).filter((v) => !v.cancelada)) {
     totais.geral += v.total || 0;
     for (const p of v.pagamentos || []) {
       if (totais[p.forma] !== undefined) totais[p.forma] += p.valor;

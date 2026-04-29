@@ -1,7 +1,7 @@
 import { formatarMoeda, formatarHora, classeTagPagamento, LABEL_FORMA } from '../../utils/formatters';
 
 export default function ModalHistorico({ vendas, onFechar, onCancelar, carregando }) {
-  const todasVendas = [...vendas].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const todasVendas = [...(vendas ?? [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     <div className="modal-overlay" onClick={onFechar}>

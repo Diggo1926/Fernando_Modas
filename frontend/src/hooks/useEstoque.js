@@ -11,7 +11,7 @@ export function useEstoque() {
     setCarregando(true);
     try {
       const { data } = await api.get('/estoque', { params: filtros });
-      setProdutos(data);
+      setProdutos(Array.isArray(data) ? data : []);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -22,7 +22,7 @@ export function useEstoque() {
   const buscarBaixoEstoque = useCallback(async () => {
     try {
       const { data } = await api.get('/estoque/baixo-estoque');
-      setBaixoEstoque(data);
+      setBaixoEstoque(Array.isArray(data) ? data : []);
     } catch (err) {
       toast.error(err.message);
     }
