@@ -2,60 +2,43 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-/**
- * Retorna o resumo de vendas para um período
- * @param {Date} inicio - Data/hora de início
- * @param {Date} fim - Data/hora de fim
- */
 async function gerarResumo(inicio, fim) {
-  // Busca todas as vendas não canceladas no período
   const vendas = await prisma.venda.findMany({
-    where: {
-      cancelada: false,
-      dataHora: { gte: inicio, lte: fim },
+    where: { cancelada: false, createdAt: { gte: inicio, lte: fim } },
+    include: {
+      items: { include: { produto: { select: { nome: true } } } },
+      pagamentos: true,
     },
-    include: { produto: { select: { nome: true } } },
   });
 
-  // Totais por forma de pagamento
-  let totalGeral = 0;
-  let totalPix = 0;
-  let totalDinheiro = 0;
-  let totalDebito = 0;
-  let totalCredito = 0;
-  let totalPecas = 0;
+  let totalGeral = 0, totalPix = 0, totalDinheiro = 0, totalDebito = 0, totalCredito = 0, totalPecas = 0;
   const produtosMap = {};
 
   for (const venda of vendas) {
-    const valor = Number(venda.valorTotal);
-    totalGeral += valor;
-    totalPecas += venda.quantidade;
+    totalGeral += venda.total;
 
-    // Contabiliza por produto
-    if (!produtosMap[venda.produtoId]) {
-      produtosMap[venda.produtoId] = {
-        nome: venda.produto.nome,
-        quantidade: 0,
-        valorTotal: 0,
-      };
+    for (const item of venda.items) {
+      totalPecas += item.quantidade;
+
+      if (!produtosMap[item.produtoId]) {
+        produtosMap[item.produtoId] = {
+          nome: item.produto.nome,
+          quantidade: 0,
+          valorTotal: 0,
+        };
+      }
+      produtosMap[item.produtoId].quantidade += item.quantidade;
+      produtosMap[item.produtoId].valorTotal += item.subtotal;
     }
-    produtosMap[venda.produtoId].quantidade += venda.quantidade;
-    produtosMap[venda.produtoId].valorTotal += valor;
 
-    // Decodifica formas de pagamento
-    let formas = [];
-    try { formas = JSON.parse(venda.formasPagamento); } catch { }
-
-    for (const fp of formas) {
-      const v = Number(fp.valor);
-      if (fp.forma === 'PIX') totalPix += v;
-      else if (fp.forma === 'Dinheiro') totalDinheiro += v;
-      else if (fp.forma === 'Débito') totalDebito += v;
-      else if (fp.forma === 'Crédito') totalCredito += v;
+    for (const p of venda.pagamentos) {
+      if (p.forma === 'PIX') totalPix += p.valor;
+      else if (p.forma === 'DINHEIRO') totalDinheiro += p.valor;
+      else if (p.forma === 'DEBITO') totalDebito += p.valor;
+      else if (p.forma === 'CREDITO') totalCredito += p.valor;
     }
   }
 
-  // Top 5 produtos mais vendidos
   const top5 = Object.values(produtosMap)
     .sort((a, b) => b.quantidade - a.quantidade)
     .slice(0, 5);

@@ -31,7 +31,6 @@ async function resumoPeriodo(req, res, next) {
         return res.status(400).json({ erro: 'Datas inválidas para o período personalizado' });
       }
     } else {
-      // Padrão: hoje
       inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0);
       fim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23, 59, 59, 999);
     }
@@ -48,7 +47,7 @@ async function listarFechamentos(req, res, next) {
   try {
     const fechamentos = await prisma.fechamentoCaixa.findMany({
       orderBy: { data: 'desc' },
-      take: 90, // Últimos 90 dias
+      take: 90,
     });
     res.json(fechamentos);
   } catch (err) {
@@ -59,13 +58,18 @@ async function listarFechamentos(req, res, next) {
 // Detalhe de um fechamento de caixa específico
 async function detalharFechamento(req, res, next) {
   try {
+    const id = parseInt(req.params.id);
+
     const fechamento = await prisma.fechamentoCaixa.findUnique({
-      where: { id: req.params.id },
+      where: { id },
       include: {
         vendas: {
           where: { cancelada: false },
-          include: { produto: { select: { nome: true, tamanho: true, cor: true } } },
-          orderBy: { dataHora: 'asc' },
+          include: {
+            items: { include: { produto: { select: { nome: true, tamanho: true, cor: true } } } },
+            pagamentos: true,
+          },
+          orderBy: { createdAt: 'asc' },
         },
       },
     });

@@ -35,7 +35,7 @@ async function listarProdutos(req, res, next) {
 async function buscarProduto(req, res, next) {
   try {
     const produto = await prisma.produto.findFirst({
-      where: { id: req.params.id, ativo: true },
+      where: { id: parseInt(req.params.id), ativo: true },
     });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
     res.json(produto);
@@ -52,12 +52,15 @@ async function criarProduto(req, res, next) {
   }
 
   try {
-    const { nome, categoria, tamanho, cor, quantidade, precoCompra, precoVenda } = req.body;
+    const { nome, categoria, tamanho, cor, quantidade, precoCusto, precoVenda } = req.body;
 
     let fotoUrl = null;
+    let fotoPublicId = null;
 
     if (req.file) {
-      fotoUrl = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
+      const resultado = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
+      fotoUrl = resultado.url;
+      fotoPublicId = resultado.publicId;
     }
 
     const produto = await prisma.produto.create({
@@ -67,9 +70,10 @@ async function criarProduto(req, res, next) {
         tamanho: sanitizarString(tamanho),
         cor: sanitizarString(cor),
         quantidade: parseInt(quantidade),
-        precoCompra: parseFloat(precoCompra),
+        precoCusto: parseFloat(precoCusto),
         precoVenda: parseFloat(precoVenda),
         fotoUrl,
+        fotoPublicId,
       },
     });
 
@@ -88,32 +92,34 @@ async function atualizarProduto(req, res, next) {
   }
 
   try {
-    const produto = await prisma.produto.findFirst({
-      where: { id: req.params.id, ativo: true },
-    });
+    const id = parseInt(req.params.id);
+    const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
-    const { nome, categoria, tamanho, cor, quantidade, precoCompra, precoVenda } = req.body;
+    const { nome, categoria, tamanho, cor, quantidade, precoCusto, precoVenda } = req.body;
 
     let fotoUrl = produto.fotoUrl;
+    let fotoPublicId = produto.fotoPublicId;
 
     if (req.file) {
-      // Remove a foto antiga do Cloudinary antes de fazer upload da nova
-      await removerImagem(produto.fotoUrl);
-      fotoUrl = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
+      await removerImagem(produto.fotoPublicId);
+      const resultado = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
+      fotoUrl = resultado.url;
+      fotoPublicId = resultado.publicId;
     }
 
     const atualizado = await prisma.produto.update({
-      where: { id: req.params.id },
+      where: { id },
       data: {
         nome: sanitizarString(nome),
         categoria: sanitizarString(categoria),
         tamanho: sanitizarString(tamanho),
         cor: sanitizarString(cor),
         quantidade: parseInt(quantidade),
-        precoCompra: parseFloat(precoCompra),
+        precoCusto: parseFloat(precoCusto),
         precoVenda: parseFloat(precoVenda),
         fotoUrl,
+        fotoPublicId,
       },
     });
 
@@ -127,17 +133,13 @@ async function atualizarProduto(req, res, next) {
 // Inativa produto (soft delete)
 async function deletarProduto(req, res, next) {
   try {
-    const produto = await prisma.produto.findFirst({
-      where: { id: req.params.id, ativo: true },
-    });
+    const id = parseInt(req.params.id);
+    const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
-    await prisma.produto.update({
-      where: { id: req.params.id },
-      data: { ativo: false },
-    });
+    await prisma.produto.update({ where: { id }, data: { ativo: false } });
 
-    logger.info({ produtoId: req.params.id }, 'Produto inativado');
+    logger.info({ produtoId: id }, 'Produto inativado');
     res.json({ mensagem: 'Produto removido com sucesso' });
   } catch (err) {
     next(err);
@@ -152,26 +154,18 @@ async function reporEstoque(req, res, next) {
   }
 
   try {
-    const produto = await prisma.produto.findFirst({
-      where: { id: req.params.id, ativo: true },
-    });
+    const id = parseInt(req.params.id);
+    const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
-    const { quantidade } = req.body;
-    const qtd = parseInt(quantidade);
+    const qtd = parseInt(req.body.quantidade);
 
-    // Registra entrada e atualiza quantidade em transação
     const [entrada, produtoAtualizado] = await prisma.$transaction([
-      prisma.entradaEstoque.create({
-        data: { produtoId: req.params.id, quantidade: qtd },
-      }),
-      prisma.produto.update({
-        where: { id: req.params.id },
-        data: { quantidade: { increment: qtd } },
-      }),
+      prisma.entradaEstoque.create({ data: { produtoId: id, quantidade: qtd } }),
+      prisma.produto.update({ where: { id }, data: { quantidade: { increment: qtd } } }),
     ]);
 
-    logger.info({ produtoId: req.params.id, quantidade: qtd }, 'Estoque reposto');
+    logger.info({ produtoId: id, quantidade: qtd }, 'Estoque reposto');
     res.json({ entrada, produto: produtoAtualizado });
   } catch (err) {
     next(err);

@@ -15,6 +15,10 @@ router.get('/resumo', resumoPeriodo);
 router.get('/fechamentos', listarFechamentos);
 
 // GET /relatorio/fechamentos/:id — detalhe de um fechamento
-router.get('/fechamentos/:id', [param('id').isUUID()], detalharFechamento);
+router.get(
+  '/fechamentos/:id',
+  [param('id').isInt({ min: 1 }).withMessage('ID inválido').toInt()],
+  detalharFechamento
+);
 
 module.exports = router;

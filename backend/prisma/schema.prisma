@@ -18,6 +18,7 @@ model Produto {
   precoVenda   Float
   fotoUrl      String?
   fotoPublicId String?
+  ativo        Boolean          @default(true)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   vendaItems   VendaItem[]
@@ -29,6 +30,7 @@ model Venda {
   total             Float
   valorRecebido     Float?
   troco             Float?
+  cancelada         Boolean          @default(false)
   fechamentoCaixaId Int?
   createdAt         DateTime         @default(now())
   items             VendaItem[]

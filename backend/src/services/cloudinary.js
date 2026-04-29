@@ -14,27 +14,23 @@ cloudinary.config({
 const TENTATIVAS_MAXIMAS = 3;
 const DELAY_BASE_MS = 500;
 
-/**
- * Aguarda um número de milissegundos
- */
 function aguardar(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * Faz upload de um buffer para o Cloudinary via stream
- * com retry automático e backoff exponencial (máximo 3 tentativas)
- * O arquivo é renomeado com UUID para evitar conflitos e nunca usar o nome original
+ * Faz upload de um buffer para o Cloudinary.
+ * Retorna { url, publicId } para armazenar ambos no banco.
  */
 async function enviarImagem(buffer, mimeType) {
-  const nomeArquivo = `rm-modas/${uuidv4()}`;
+  const publicId = `rm-modas/${uuidv4()}`;
 
   for (let tentativa = 1; tentativa <= TENTATIVAS_MAXIMAS; tentativa++) {
     try {
       const resultado = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            public_id: nomeArquivo,
+            public_id: publicId,
             resource_type: 'image',
             format: mimeType === 'image/webp' ? 'webp' : mimeType === 'image/png' ? 'png' : 'jpg',
             overwrite: true,
@@ -48,14 +44,13 @@ async function enviarImagem(buffer, mimeType) {
           }
         );
 
-        // Cria um stream legível a partir do buffer e faz pipe para o Cloudinary
         const readable = new Readable();
         readable.push(buffer);
         readable.push(null);
         readable.pipe(stream);
       });
 
-      return resultado.secure_url;
+      return { url: resultado.secure_url, publicId: resultado.public_id };
     } catch (erro) {
       logger.warn({ tentativa, erro: erro.message }, 'Falha ao enviar imagem para Cloudinary');
 
@@ -63,22 +58,17 @@ async function enviarImagem(buffer, mimeType) {
         throw new Error('Não foi possível enviar a imagem após várias tentativas.');
       }
 
-      // Backoff exponencial: 500ms, 1000ms, 2000ms
       await aguardar(DELAY_BASE_MS * Math.pow(2, tentativa - 1));
     }
   }
 }
 
 /**
- * Remove uma imagem do Cloudinary pelo public_id extraído da URL
+ * Remove uma imagem do Cloudinary pelo publicId armazenado no banco.
  */
-async function removerImagem(url) {
+async function removerImagem(publicId) {
   try {
-    if (!url) return;
-    // Extrai o public_id da URL do Cloudinary
-    const partes = url.split('/');
-    const arquivo = partes[partes.length - 1].split('.')[0];
-    const publicId = `rm-modas/${arquivo}`;
+    if (!publicId) return;
     await cloudinary.uploader.destroy(publicId);
   } catch (erro) {
     logger.warn({ erro: erro.message }, 'Falha ao remover imagem do Cloudinary');

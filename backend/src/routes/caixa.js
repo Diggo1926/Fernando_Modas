@@ -21,19 +21,19 @@ router.get('/vendas', listarVendasDia);
 router.post(
   '/vendas',
   [
-    body('produtoId').isUUID().withMessage('ID de produto inválido'),
-    body('quantidade').isInt({ min: 1 }).withMessage('Quantidade deve ser ao menos 1'),
-    body('valorTotal').isFloat({ min: 0.01 }).withMessage('Valor total inválido'),
-    body('formasPagamento')
-      .isArray({ min: 1 })
-      .withMessage('Informe ao menos uma forma de pagamento'),
-    body('formasPagamento.*.forma')
-      .isIn(['PIX', 'Dinheiro', 'Débito', 'Crédito'])
+    body('items').isArray({ min: 1 }).withMessage('Informe ao menos um item'),
+    body('items.*.produtoId').isInt({ min: 1 }).withMessage('ID de produto inválido'),
+    body('items.*.quantidade').isInt({ min: 1 }).withMessage('Quantidade deve ser ao menos 1'),
+    body('items.*.precoUnitario').isFloat({ min: 0.01 }).withMessage('Preço unitário inválido'),
+    body('total').isFloat({ min: 0.01 }).withMessage('Total inválido'),
+    body('valorRecebido').optional().isFloat({ min: 0 }).withMessage('Valor recebido inválido'),
+    body('troco').optional().isFloat({ min: 0 }).withMessage('Troco inválido'),
+    body('pagamentos').isArray({ min: 1 }).withMessage('Informe ao menos uma forma de pagamento'),
+    body('pagamentos.*.forma')
+      .isIn(['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO'])
       .withMessage('Forma de pagamento inválida'),
-    body('formasPagamento.*.valor')
-      .isFloat({ min: 0.01 })
-      .withMessage('Valor da forma de pagamento inválido'),
-    body('parcelas')
+    body('pagamentos.*.valor').isFloat({ min: 0.01 }).withMessage('Valor da forma de pagamento inválido'),
+    body('pagamentos.*.parcelas')
       .optional()
       .isInt({ min: 1, max: 12 })
       .withMessage('Parcelas deve ser entre 1 e 12'),
@@ -44,7 +44,7 @@ router.post(
 // DELETE /caixa/vendas/:id — cancela uma venda
 router.delete(
   '/vendas/:id',
-  [param('id').isUUID().withMessage('ID de venda inválido')],
+  [param('id').isInt({ min: 1 }).withMessage('ID de venda inválido').toInt()],
   cancelarVenda
 );
 

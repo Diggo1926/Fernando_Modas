@@ -1,9 +1,5 @@
 // Utilitário de sanitização de strings contra XSS e injeção
-const { escape } = require('express-validator');
 
-/**
- * Remove tags HTML e caracteres perigosos de uma string
- */
 function sanitizarString(valor) {
   if (typeof valor !== 'string') return valor;
   return valor
@@ -15,9 +11,6 @@ function sanitizarString(valor) {
     .trim();
 }
 
-/**
- * Sanitiza recursivamente todos os campos string de um objeto
- */
 function sanitizarObjeto(obj) {
   if (!obj || typeof obj !== 'object') return obj;
   const resultado = {};

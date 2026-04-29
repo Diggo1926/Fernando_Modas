@@ -23,7 +23,7 @@ const validacoesProduto = [
   body('tamanho').isIn(TAMANHOS_VALIDOS).withMessage('Tamanho inválido'),
   body('cor').trim().isLength({ min: 2, max: 50 }).withMessage('Cor deve ter entre 2 e 50 caracteres'),
   body('quantidade').isInt({ min: 0 }).withMessage('Quantidade deve ser um número inteiro positivo'),
-  body('precoCompra').isFloat({ min: 0 }).withMessage('Preço de custo inválido'),
+  body('precoCusto').isFloat({ min: 0 }).withMessage('Preço de custo inválido'),
   body('precoVenda').isFloat({ min: 0.01 }).withMessage('Preço de venda inválido'),
 ];
 
@@ -34,7 +34,7 @@ router.get('/', listarProdutos);
 router.get('/baixo-estoque', listaBaixoEstoque);
 
 // GET /estoque/:id — busca produto por ID
-router.get('/:id', [param('id').isUUID()], buscarProduto);
+router.get('/:id', [param('id').isInt({ min: 1 }).toInt()], buscarProduto);
 
 // POST /estoque — cadastra produto
 router.post(
@@ -52,18 +52,18 @@ router.put(
   limitadorRestrito,
   upload.single('foto'),
   validarMimeReal,
-  [param('id').isUUID(), ...validacoesProduto],
+  [param('id').isInt({ min: 1 }).toInt(), ...validacoesProduto],
   atualizarProduto
 );
 
 // DELETE /estoque/:id — inativa produto
-router.delete('/:id', [param('id').isUUID()], deletarProduto);
+router.delete('/:id', [param('id').isInt({ min: 1 }).toInt()], deletarProduto);
 
 // POST /estoque/:id/repor — repõe estoque
 router.post(
   '/:id/repor',
   [
-    param('id').isUUID(),
+    param('id').isInt({ min: 1 }).toInt(),
     body('quantidade').isInt({ min: 1 }).withMessage('Quantidade de reposição deve ser ao menos 1'),
   ],
   reporEstoque
