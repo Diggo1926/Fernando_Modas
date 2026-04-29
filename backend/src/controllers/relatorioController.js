@@ -1,6 +1,7 @@
 // Controller do módulo Relatório
 const { PrismaClient } = require('@prisma/client');
 const { gerarResumo } = require('../services/relatorio');
+const logger = require('../utils/logger');
 
 const prisma = new PrismaClient();
 
@@ -49,9 +50,10 @@ async function listarFechamentos(req, res, next) {
       orderBy: { data: 'desc' },
       take: 90,
     });
-    res.json(fechamentos);
+    res.json(fechamentos ?? []);
   } catch (err) {
-    next(err);
+    logger.error({ err }, 'Erro ao listar fechamentos');
+    return res.json([]);
   }
 }
 

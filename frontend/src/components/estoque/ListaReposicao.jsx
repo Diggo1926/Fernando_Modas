@@ -2,13 +2,17 @@ import { formatarMoeda } from '../../utils/formatters';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-export default function ListaReposicao({ produtos, onFechar }) {
-  function copiarLista() {
+export default function ListaReposicao({ produtos = [], onFechar }) {
+  async function copiarLista() {
     const linhas = produtos.map(
       (p) => `${p.nome} (${p.tamanho} · ${p.cor}) — ${p.quantidade} un. restantes`
     );
-    navigator.clipboard.writeText(linhas.join('\n'));
-    alert('Lista copiada para a área de transferência!');
+    try {
+      await navigator.clipboard.writeText(linhas.join('\n'));
+      alert('Lista copiada para a área de transferência!');
+    } catch {
+      alert('Não foi possível copiar. Selecione e copie manualmente.');
+    }
   }
 
   function exportarPDF() {

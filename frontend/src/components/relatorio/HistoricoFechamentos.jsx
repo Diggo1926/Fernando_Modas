@@ -40,7 +40,7 @@ export default function HistoricoFechamentos({ fechamentos, onSelecionar }) {
                 {formatarData(f.data)}
               </div>
               <div style={{ fontSize: 11, color: 'var(--texto-leve)', marginTop: 2 }}>
-                {f.totalPecas} peças
+                {f.totalPecas ?? 0} peças
               </div>
             </div>
             <div

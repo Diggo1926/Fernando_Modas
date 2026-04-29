@@ -122,9 +122,10 @@ async function listarVendasDia(req, res, next) {
       orderBy: { createdAt: 'desc' },
     });
 
-    res.json(vendas);
+    res.json(vendas ?? []);
   } catch (err) {
-    next(err);
+    logger.error({ err }, 'Erro ao listar vendas do dia');
+    res.json([]);
   }
 }
 
@@ -153,7 +154,8 @@ async function metricasDia(req, res, next) {
 
     res.json({ faturamentoTotal: totalFaturamento, totalPecas, ticketMedio, produtosBaixoEstoque });
   } catch (err) {
-    next(err);
+    logger.error({ err }, 'Erro ao calcular métricas do dia');
+    res.json({ faturamentoTotal: 0, totalPecas: 0, ticketMedio: 0, produtosBaixoEstoque: 0 });
   }
 }
 

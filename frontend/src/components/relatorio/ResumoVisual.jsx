@@ -28,9 +28,9 @@ export default function ResumoVisual({ resumo }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
         {[
           { label: 'FATURAMENTO', valor: formatarMoeda(totalGeral), cor: 'var(--ouro)' },
-          { label: 'PEÇAS VENDIDAS', valor: totalPecas, cor: 'var(--texto)' },
+          { label: 'PEÇAS VENDIDAS', valor: totalPecas ?? 0, cor: 'var(--texto)' },
           { label: 'TICKET MÉDIO', valor: formatarMoeda(ticketMedio), cor: 'var(--texto)' },
-          { label: 'VENDAS', valor: quantidadeVendas, cor: 'var(--texto)' },
+          { label: 'VENDAS', valor: quantidadeVendas ?? 0, cor: 'var(--texto)' },
         ].map(({ label, valor, cor }) => (
           <div key={label} className="card animar-entrada" style={{ padding: '18px 20px' }}>
             <div className="label-padrao" style={{ marginBottom: 6 }}>{label}</div>

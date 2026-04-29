@@ -131,7 +131,7 @@ export default function RelatorioPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
                 {[
                   { label: 'Total',    valor: fechamentoDetalhe.totalGeral,    cor: 'var(--ouro)'  },
-                  { label: 'Peças',    valor: fechamentoDetalhe.totalPecas + ' un.', cor: 'var(--texto)' },
+                  { label: 'Peças',    valor: (fechamentoDetalhe.totalPecas ?? 0) + ' un.', cor: 'var(--texto)' },
                   { label: 'PIX',      valor: fechamentoDetalhe.totalPix,      cor: 'var(--verde)' },
                   { label: 'Dinheiro', valor: fechamentoDetalhe.totalDinheiro, cor: 'var(--ouro)'  },
                   { label: 'Débito',   valor: fechamentoDetalhe.totalDebito,   cor: 'var(--roxo)'  },

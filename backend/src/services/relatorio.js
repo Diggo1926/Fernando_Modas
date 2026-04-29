@@ -22,7 +22,7 @@ async function gerarResumo(inicio, fim) {
 
       if (!produtosMap[item.produtoId]) {
         produtosMap[item.produtoId] = {
-          nome: item.produto.nome,
+          nome: item.produto?.nome ?? 'Produto removido',
           quantidade: 0,
           valorTotal: 0,
         };

@@ -25,9 +25,10 @@ async function listarProdutos(req, res, next) {
     else if (ordenar === 'quantidade_desc') orderBy = { quantidade: 'desc' };
 
     const produtos = await prisma.produto.findMany({ where, orderBy });
-    res.json(produtos);
+    res.json(produtos ?? []);
   } catch (err) {
-    next(err);
+    logger.error({ err }, 'Erro ao listar produtos');
+    res.json([]);
   }
 }
 
@@ -179,9 +180,10 @@ async function listaBaixoEstoque(req, res, next) {
       where: { ativo: true, quantidade: { lte: 3 } },
       orderBy: { quantidade: 'asc' },
     });
-    res.json(produtos);
+    res.json(produtos ?? []);
   } catch (err) {
-    next(err);
+    logger.error({ err }, 'Erro ao listar baixo estoque');
+    res.json([]);
   }
 }
 

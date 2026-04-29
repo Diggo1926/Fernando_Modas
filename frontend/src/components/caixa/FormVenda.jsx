@@ -34,7 +34,7 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
     const timer = setTimeout(async () => {
       try {
         const { data } = await api.get('/estoque', { params: { busca: form.busca } });
-        setForm((f) => ({ ...f, sugestoes: data.slice(0, 8) }));
+        setForm((f) => ({ ...f, sugestoes: Array.isArray(data) ? data.slice(0, 8) : [] }));
       } catch { /* silencioso */ }
     }, 300);
     return () => clearTimeout(timer);
