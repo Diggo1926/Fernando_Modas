@@ -2,6 +2,9 @@
 const logger = require('../utils/logger');
 
 function autenticarApiKey(req, res, next) {
+  // Preflight CORS não carrega headers de autenticação — não bloquear
+  if (req.method === 'OPTIONS') return next();
+
   const chaveEnviada = req.headers['x-api-key'];
   const chaveEsperada = process.env.API_KEY;
 

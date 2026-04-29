@@ -31,9 +31,7 @@ export function useEstoque() {
   const criarProduto = useCallback(async (formData) => {
     setCarregando(true);
     try {
-      await api.post('/estoque', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.post('/estoque', formData);
       toast.success('Produto cadastrado com sucesso!');
       await buscarProdutos();
       return true;
@@ -48,9 +46,7 @@ export function useEstoque() {
   const atualizarProduto = useCallback(async (id, formData) => {
     setCarregando(true);
     try {
-      await api.put(`/estoque/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await api.put(`/estoque/${id}`, formData);
       toast.success('Produto atualizado com sucesso!');
       await buscarProdutos();
       return true;

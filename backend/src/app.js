@@ -11,11 +11,11 @@ const rotasRelatorio = require('./routes/relatorio');
 
 const app = express();
 
-// Força HTTPS em produção
+// Força HTTPS em produção — 308 preserva o método HTTP (POST não vira GET)
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     if (req.headers['x-forwarded-proto'] !== 'https') {
-      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+      return res.redirect(308, `https://${req.headers.host}${req.url}`);
     }
     next();
   });
@@ -44,9 +44,11 @@ app.use(cors({
     if (origensPermitidas.includes(origin)) return callback(null, true);
     return callback(new Error('Origem não permitida pelo CORS'));
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'X-API-Key', 'X-CSRF-Token'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'X-API-Key'],
   credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 }));
 
 // Limite de body — proteção contra payloads grandes
