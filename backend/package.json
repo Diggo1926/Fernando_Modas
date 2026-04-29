@@ -4,11 +4,9 @@
   "description": "Backend do sistema de gestão RM Modas",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "build": "prisma generate",
+    "start": "prisma migrate deploy && node src/index.js",
+    "dev": "prisma generate && nodemon src/index.js"
   },
   "dependencies": {
     "@prisma/client": "^5.10.0",
