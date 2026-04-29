@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Produto {
+  id           Int              @id @default(autoincrement())
+  nome         String
+  categoria    String
+  tamanho      String
+  cor          String
+  quantidade   Int              @default(0)
+  precoCusto   Float
+  precoVenda   Float
+  fotoUrl      String?
+  fotoPublicId String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  vendaItems   VendaItem[]
+  entradas     EntradaEstoque[]
+}
+
+model Venda {
+  id                Int              @id @default(autoincrement())
+  total             Float
+  valorRecebido     Float?
+  troco             Float?
+  fechamentoCaixaId Int?
+  createdAt         DateTime         @default(now())
+  items             VendaItem[]
+  pagamentos        VendaPagamento[]
+  fechamentoCaixa   FechamentoCaixa? @relation(fields: [fechamentoCaixaId], references: [id])
+}
+
+model VendaItem {
+  id            Int     @id @default(autoincrement())
+  vendaId       Int
+  produtoId     Int
+  quantidade    Int
+  precoUnitario Float
+  subtotal      Float
+  venda         Venda   @relation(fields: [vendaId], references: [id])
+  produto       Produto @relation(fields: [produtoId], references: [id])
+}
+
+model VendaPagamento {
+  id       Int    @id @default(autoincrement())
+  vendaId  Int
+  forma    String
+  valor    Float
+  parcelas Int?
+  venda    Venda  @relation(fields: [vendaId], references: [id])
+}
+
+model EntradaEstoque {
+  id         Int      @id @default(autoincrement())
+  produtoId  Int
+  quantidade Int
+  createdAt  DateTime @default(now())
+  produto    Produto  @relation(fields: [produtoId], references: [id])
+}
+
+model FechamentoCaixa {
+  id            Int      @id @default(autoincrement())
+  data          DateTime @default(now())
+  totalGeral    Float
+  totalDinheiro Float
+  totalPix      Float
+  totalDebito   Float
+  totalCredito  Float
+  totalPecas    Int
+  vendas        Venda[]
+}
