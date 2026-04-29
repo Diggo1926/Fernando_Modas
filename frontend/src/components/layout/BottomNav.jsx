@@ -17,14 +17,14 @@ const IcoRelatorio = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <line x1="18" y1="20" x2="18" y2="10" />
     <line x1="12" y1="20" x2="12" y2="4" />
-    <line x1="6" y1="20" x2="6" y2="14" />
+    <line x1="6"  y1="20" x2="6"  y2="14" />
   </svg>
 );
 
 const itens = [
-  { to: '/caixa', label: 'Caixa', Ico: IcoCaixa },
-  { to: '/estoque', label: 'Estoque', Ico: IcoEstoque },
-  { to: '/relatorio', label: 'Relatório', Ico: IcoRelatorio },
+  { to: '/caixa',    label: 'Caixa',     Ico: IcoCaixa },
+  { to: '/estoque',  label: 'Estoque',   Ico: IcoEstoque },
+  { to: '/relatorio',label: 'Relatório', Ico: IcoRelatorio },
 ];
 
 export default function BottomNav() {
@@ -39,7 +39,9 @@ export default function BottomNav() {
         borderTop: '1px solid var(--borda)',
         display: 'flex',
         justifyContent: 'space-around',
-        padding: '8px 0 12px',
+        paddingTop: 8,
+        /* Respeita o notch/home indicator do iPhone */
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 6px)',
         zIndex: 40,
       }}
     >
@@ -57,7 +59,8 @@ export default function BottomNav() {
             fontFamily: 'Montserrat, sans-serif',
             fontSize: 10,
             fontWeight: isActive ? 500 : 300,
-            minWidth: 60,
+            minWidth: 64,
+            padding: '4px 0',
           })}
         >
           <Ico />

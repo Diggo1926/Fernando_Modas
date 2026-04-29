@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useVendas } from '../hooks/useVendas';
 import { useEstoque } from '../hooks/useEstoque';
 import { useWindowSize } from '../hooks/useWindowSize';
@@ -12,7 +12,11 @@ export default function CaixaPage() {
   const { vendas, metricas, carregando, buscarVendas, buscarMetricas, registrarVenda, cancelarVenda, fecharCaixa } = useVendas();
   const { baixoEstoque, buscarBaixoEstoque } = useEstoque();
   const { width } = useWindowSize();
-  const isMobile = width < 768;
+  const isMobile  = width < 768;
+  const isTablet  = width >= 768 && width < 1024;
+  const isDesktop = width >= 1024;
+
+  const [drawerAberto, setDrawerAberto] = useState(false);
 
   useEffect(() => {
     buscarVendas();
@@ -20,26 +24,20 @@ export default function CaixaPage() {
     buscarBaixoEstoque();
   }, []);
 
+  async function handleVenda(dados) {
+    const ok = await registrarVenda(dados);
+    if (ok) setDrawerAberto(false);
+    return ok;
+  }
+
+  const formVenda = <FormVenda onVendaRegistrada={handleVenda} carregando={carregando} />;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px' : '24px' }}>
-        {/* Cards de métricas */}
-        {isMobile ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
-            {metricas && (
-              <>
-                <div className="card" style={{ padding: '16px 20px' }}>
-                  <div className="label-padrao">FATURAMENTO DO DIA</div>
-                  <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 28, fontStyle: 'italic', color: 'var(--ouro)' }}>
-                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(metricas.faturamentoTotal || 0)}
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-        ) : (
-          <MetricasCards metricas={metricas} />
-        )}
+
+        {/* Cards de métricas — responsivos */}
+        <MetricasCards metricas={metricas} isMobile={isMobile} isTablet={isTablet} />
 
         {/* Alerta de estoque baixo */}
         {baixoEstoque.length > 0 && (
@@ -48,25 +46,64 @@ export default function CaixaPage() {
           </div>
         )}
 
-        {/* Layout principal */}
-        <div style={{ display: isMobile ? 'flex' : 'grid', gridTemplateColumns: '1fr 400px', flexDirection: 'column', gap: 20 }}>
-          {/* Painel esquerdo */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <UltimasVendas
-              vendas={vendas}
-              onCancelar={cancelarVenda}
-              carregando={carregando}
-            />
-          </div>
+        {/* Botão Nova Venda (mobile e tablet) */}
+        {!isDesktop && (
+          <button
+            className="btn-primario"
+            style={{ width: '100%', marginBottom: 20 }}
+            onClick={() => setDrawerAberto(true)}
+          >
+            + Nova Venda
+          </button>
+        )}
 
-          {/* Formulário de venda */}
-          <div>
-            <FormVenda onVendaRegistrada={registrarVenda} carregando={carregando} />
+        {/* Layout principal */}
+        {isDesktop ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 20 }}>
+            <UltimasVendas vendas={vendas} onCancelar={cancelarVenda} carregando={carregando} />
+            <div>{formVenda}</div>
           </div>
-        </div>
+        ) : (
+          <UltimasVendas vendas={vendas} onCancelar={cancelarVenda} carregando={carregando} />
+        )}
       </div>
 
-      {/* Barra inferior fixa */}
+      {/* Drawer — mobile: sobe de baixo */}
+      {isMobile && drawerAberto && (
+        <div className="drawer-overlay" onClick={() => setDrawerAberto(false)}>
+          <div className="drawer-box" onClick={(e) => e.stopPropagation()}>
+            <div className="drawer-handle" />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 16px 4px' }}>
+              <button
+                onClick={() => setDrawerAberto(false)}
+                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: 'var(--texto-leve)', minWidth: 36, minHeight: 36 }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '0 16px 16px' }}>{formVenda}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal — tablet: centralizado */}
+      {isTablet && drawerAberto && (
+        <div className="modal-overlay" onClick={() => setDrawerAberto(false)}>
+          <div className="modal-box" style={{ maxWidth: 480 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '16px 16px 0' }}>
+              <button
+                onClick={() => setDrawerAberto(false)}
+                style={{ background: 'none', border: 'none', fontSize: 22, cursor: 'pointer', color: 'var(--texto-leve)', minWidth: 36, minHeight: 36 }}
+              >
+                ×
+              </button>
+            </div>
+            <div style={{ padding: '0 20px 20px' }}>{formVenda}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Barra de fechamento de caixa */}
       <BarraCaixa vendas={vendas} onFecharCaixa={fecharCaixa} carregando={carregando} />
     </div>
   );

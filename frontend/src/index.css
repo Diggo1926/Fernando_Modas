@@ -37,29 +37,27 @@ html, body, #root {
   color: var(--texto);
   font-family: 'Montserrat', sans-serif;
   font-weight: 300;
+  /* Impede scroll horizontal em qualquer tela */
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Remove delay de 300ms no toque em iOS e Android */
+button, a, [role="button"], input, select, textarea, label {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Scrollbar personalizada */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--borda-suave);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--borda);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--ouro);
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--borda-suave); }
+::-webkit-scrollbar-thumb { background: var(--borda); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ouro); }
 
-/* Gradiente ouro usado em bordas e textos */
+/* Gradiente ouro */
 .gradient-ouro {
   background: linear-gradient(135deg, #8A6A20, #C9A84C, #D4AA6A);
 }
-
-/* Texto com gradiente ouro */
 .texto-ouro-gradient {
   background: linear-gradient(135deg, #8A6A20, #C9A84C, #D4AA6A);
   -webkit-background-clip: text;
@@ -74,12 +72,13 @@ html, body, #root {
   border-radius: 8px;
 }
 
-/* Botão primário — preto com texto ouro */
+/* Botão primário — altura mínima para toque confortável */
 .btn-primario {
   background-color: var(--preto);
   color: var(--ouro);
   border: none;
   padding: 10px 20px;
+  min-height: 48px;
   border-radius: 6px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 500;
@@ -88,25 +87,17 @@ html, body, #root {
   letter-spacing: 0.5px;
   transition: opacity 0.2s ease, transform 0.1s ease;
 }
-.btn-primario:hover {
-  opacity: 0.88;
-  transform: translateY(-1px);
-}
-.btn-primario:active {
-  transform: translateY(0);
-}
-.btn-primario:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
+.btn-primario:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-primario:active { transform: translateY(0); }
+.btn-primario:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-/* Botão secundário — borda */
+/* Botão secundário */
 .btn-secundario {
   background: transparent;
   color: var(--texto-md);
   border: 1px solid var(--borda);
   padding: 10px 20px;
+  min-height: 48px;
   border-radius: 6px;
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
@@ -114,16 +105,13 @@ html, body, #root {
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
 }
-.btn-secundario:hover {
-  border-color: var(--vermelho);
-  color: var(--vermelho);
-}
+.btn-secundario:hover { border-color: var(--vermelho); color: var(--vermelho); }
 
-/* Tag de forma de pagamento */
-.tag-pix    { background: var(--verde-bg); color: var(--verde); }
-.tag-dinheiro { background: var(--ouro-bg); color: var(--ouro); }
-.tag-debito  { background: var(--roxo-bg); color: var(--roxo); }
-.tag-credito { background: var(--azul-bg); color: var(--azul); }
+/* Tags de forma de pagamento */
+.tag-pix      { background: var(--verde-bg); color: var(--verde); }
+.tag-dinheiro { background: var(--ouro-bg);  color: var(--ouro);  }
+.tag-debito   { background: var(--roxo-bg);  color: var(--roxo);  }
+.tag-credito  { background: var(--azul-bg);  color: var(--azul);  }
 
 .tag-pagamento {
   padding: 2px 8px;
@@ -146,16 +134,49 @@ html, body, #root {
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  50%       { opacity: 0.4; }
 }
 
-/* Animação de entrada dos cards */
+/* Animação de entrada */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animar-entrada {
-  animation: fadeInUp 0.3s ease forwards;
+.animar-entrada { animation: fadeInUp 0.3s ease forwards; }
+
+/* Drawer — bottom sheet para mobile */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.55);
+  backdrop-filter: blur(3px);
+  z-index: 45;
+  display: flex;
+  align-items: flex-end;
+}
+
+.drawer-box {
+  width: 100%;
+  background: var(--branco);
+  border-radius: 16px 16px 0 0;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.drawer-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--borda);
+  border-radius: 2px;
+  margin: 12px auto 4px;
+  flex-shrink: 0;
 }
 
 /* Modal overlay */
@@ -193,13 +214,10 @@ html, body, #root {
   background: var(--bg);
   outline: none;
   transition: border-color 0.2s;
+  min-height: 48px;
 }
-.input-padrao:focus {
-  border-color: var(--ouro);
-}
-.input-padrao::placeholder {
-  color: var(--texto-leve);
-}
+.input-padrao:focus { border-color: var(--ouro); }
+.input-padrao::placeholder { color: var(--texto-leve); }
 
 /* Label padrão */
 .label-padrao {
@@ -211,7 +229,7 @@ html, body, #root {
   margin-bottom: 4px;
 }
 
-/* Toggle de seleção (tamanho, forma de pagamento) */
+/* Toggle de seleção */
 .toggle-btn {
   padding: 6px 14px;
   border-radius: 6px;
@@ -222,27 +240,25 @@ html, body, #root {
   font-family: 'Montserrat', sans-serif;
   cursor: pointer;
   transition: all 0.15s;
+  min-height: 40px;
 }
-.toggle-btn:hover {
-  border-color: var(--ouro);
-  color: var(--ouro);
-}
-.toggle-btn.ativo {
-  background: var(--ouro-bg);
-  border-color: var(--ouro);
-  color: var(--ouro);
-  font-weight: 500;
-}
+.toggle-btn:hover { border-color: var(--ouro); color: var(--ouro); }
+.toggle-btn.ativo  { background: var(--ouro-bg); border-color: var(--ouro); color: var(--ouro); font-weight: 500; }
 
-/* Barra de progresso simples */
-.barra-progresso {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--borda-suave);
-  overflow: hidden;
-}
-.barra-progresso-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
+/* Barra de progresso */
+.barra-progresso { height: 6px; border-radius: 3px; background: var(--borda-suave); overflow: hidden; }
+.barra-progresso-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+/* Mobile — ajustes específicos para iOS/Android */
+@media (max-width: 767px) {
+  /* Previne zoom automático do iOS em inputs com font-size < 16px */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Garante que nada extravase horizontalmente */
+  * { max-width: 100%; }
+
+  /* Padding lateral mínimo de 16px nas páginas */
+  .pagina-padding { padding-left: 16px; padding-right: 16px; }
 }
