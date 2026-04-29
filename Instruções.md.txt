@@ -1,0 +1,291 @@
+# Prompt para Claude Code — Sistema de Gestão RM Modas
+
+---
+
+## CONTEXTO
+
+Crie um sistema de gestão completo para a loja de moda feminina **RM Modas**, localizada em Itabaiana/SE. O sistema será acessado via navegador (desktop e mobile — iOS e Android), hospedado com frontend no **Vercel** e backend no **Railway**, com imagens gerenciadas pelo **Cloudinary**.
+
+Não há autenticação de usuários no momento. O sistema é uso interno da loja.
+
+---
+
+## STACK OBRIGATÓRIA
+
+**Frontend:** React (Vite) — deploy no Vercel  
+**Backend:** Node.js com Express — deploy no Railway  
+**Banco de dados:** PostgreSQL (fornecido pelo Railway)  
+**Upload de imagens:** Cloudinary (variáveis de ambiente no .env)  
+**ORM:** Prisma  
+**Estilização:** Tailwind CSS + CSS customizado quando necessário  
+
+---
+
+## IDENTIDADE VISUAL
+
+### Paleta de cores
+```
+--bg:           #F7F5F2   /* Fundo geral off-white */
+--branco:       #FFFFFF   /* Cards e painéis */
+--borda:        #E8E4DE   /* Bordas suaves */
+--borda-suave:  #F0EDE8   /* Separadores internos */
+--preto:        #111111   /* Cabeçalho e marca */
+--ouro:         #B8924A   /* Destaque principal */
+--ouro-claro:   #D4AA6A   /* Hover e gradiente */
+--ouro-bg:      #FAF6EF   /* Fundo de card em destaque */
+--texto:        #2C2825   /* Texto principal */
+--texto-md:     #6B6460   /* Texto secundário */
+--texto-leve:   #A8A098   /* Labels e placeholders */
+--verde:        #4A8C65   /* PIX / confirmação */
+--verde-bg:     #F0F7F3
+--vermelho:     #B85A4A   /* Alerta / cancelar */
+--vermelho-bg:  #FBF0EE
+--azul:         #4A6A9C   /* Crédito */
+--azul-bg:      #EEF2F8
+--roxo:         #7A5A9C   /* Débito */
+--roxo-bg:      #F4F0F8
+```
+
+### Tipografia
+- **Display / títulos:** Cormorant Garamond (Google Fonts) — light italic
+- **Interface / corpo:** Montserrat (Google Fonts) — light e regular
+- Nunca usar Inter, Roboto, Arial ou fontes genéricas de sistema
+
+### Logo
+- Círculo com fundo preto (#111111)
+- Borda com gradiente ouro: de #8A6A20 → #C9A84C → #D4AA6A
+- Letras "RM" em itálico branco com gradiente ouro
+- Abaixo da linha: "MODAS" em Montserrat light, letter-spacing grande, cor ouro
+
+### Layout geral
+- **Sidebar esquerda** (220px): fundo branco, borda direita fina
+  - Topo da sidebar: fundo preto com a logo e nome "RM Modas"
+  - Navegação com ícones + labels, item ativo com fundo ouro-bg e texto ouro
+- **Topbar superior**: fundo preto (#111111), título da página em branco, botão primário em ouro
+- **Conteúdo principal**: fundo off-white, cards brancos com bordas suaves e border-radius 8px
+- **Barra inferior de caixa**: fundo branco com borda superior, totais por forma de pagamento + botão "Fechar Caixa"
+
+### Referências de design obrigatórias
+Antes de escrever qualquer CSS ou componente visual, consultar e aplicar referências de:
+- **cssbuttons.io** — padrão dos botões
+- **mycolor.space** — verificação de harmonia da paleta
+- **css.glass** — efeitos de glassmorphism quando aplicável
+- **haikei.app** — backgrounds e formas decorativas
+- **colorhunt.co** — consistência da paleta
+- **svgrepo.com** — ícones SVG da interface
+- **animista.net** — animações de entrada e micro-interações
+
+---
+
+## MÓDULOS DO SISTEMA
+
+---
+
+### MÓDULO 1 — CAIXA (tela principal)
+
+**Métricas do topo (3 cards):**
+- Faturamento total do dia (ouro)
+- Peças vendidas + ticket médio
+- Quantidade de produtos com estoque baixo (vermelho se > 0)
+
+**Painel esquerdo — Últimas Vendas:**
+- Lista das últimas vendas do dia com: hora, nome do produto, tamanho, cor, forma de pagamento (tag colorida), valor
+- Tags de pagamento: PIX (verde), Dinheiro (ouro), Débito (roxo), Crédito (azul)
+- Botão "Ver histórico completo" abre modal com todas as vendas do dia com opção de cancelar cada uma
+
+**Painel esquerdo — Estoque com Alerta:**
+- Lista produtos com quantidade ≤ 3
+- Ponto vermelho + nome do produto + quantidade restante
+- Botão "Ir para estoque"
+
+**Painel direito — Registrar Venda:**
+- Campo de busca de produto (autocomplete por nome)
+- Seleção de tamanho (PP, P, M, G, GG, Único)
+- Campo de quantidade
+- Campo de valor total (preenchido automaticamente ao selecionar produto, editável)
+- Seleção de forma de pagamento: Dinheiro, PIX, Débito, Crédito (botões toggle, pode selecionar múltiplos para venda mista)
+- Se Dinheiro selecionado: campo "Valor Recebido" aparece e calcula troco automaticamente em tempo real
+- Se Crédito selecionado: campo de parcelas (1x a 12x) aparece
+- Box de troco: fundo verde suave, valor em Cormorant Garamond
+- Botão "Confirmar Venda" (preto com texto ouro)
+- Botão "Cancelar" (borda fina, texto vermelho ao hover)
+
+**Ao confirmar venda:**
+- Débita automaticamente do estoque
+- Adiciona ao histórico do dia
+- Atualiza métricas em tempo real
+- Limpa o formulário
+
+**Barra inferior fixa:**
+- Total do dia em ouro
+- Subtotais por forma de pagamento (PIX, Dinheiro, Cartão)
+- Botão "Fechar Caixa" — gera resumo do dia, salva no banco com data/hora, exibe modal de confirmação com totais
+
+---
+
+### MÓDULO 2 — ESTOQUE
+
+**Listagem de produtos:**
+- Grid de cards com foto do produto (quadrada, aspect-ratio 1:1)
+- Cada card: foto, nome, categoria, cor, tamanho, quantidade, preço de venda
+- Quantidade em destaque: verde se > 3, amarelo se ≤ 3, vermelho se ≤ 1
+- Filtros no topo: categoria (dropdown), tamanho (botões toggle), cor (input texto), ordenação
+- Busca por nome em tempo real
+
+**Cadastro de produto (modal ou página separada):**
+- Nome do produto
+- Categoria: Vestido, Blusa, Calça, Saia, Conjunto, Acessório, Outro
+- Tamanho: PP, P, M, G, GG, Único
+- Cor
+- Quantidade inicial
+- Preço de custo
+- Preço de venda
+- Foto do produto (upload via Cloudinary — validação de MIME type, tamanho máximo 5MB, renomeação server-side com UUID, nunca servido como executável)
+- Margem de lucro calculada automaticamente: ((venda - custo) / custo) × 100
+
+**Entrada de estoque (reposição):**
+- Botão "Repor Estoque" em cada card
+- Modal: quantidade a adicionar + data (preenchida automaticamente)
+- Registra histórico de entradas no banco
+
+**Lista de reposição:**
+- Botão "Lista de Reposição" no topo
+- Exibe todos os produtos com quantidade ≤ 3
+- Permite copiar a lista ou exportar em PDF simples (jsPDF)
+
+---
+
+### MÓDULO 3 — RELATÓRIO DO DIA
+
+**Resumo visual:**
+- Faturamento total do período selecionado
+- Breakdown por forma de pagamento com barras de proporção
+- Quantidade total de peças vendidas
+- Ticket médio do período
+- Top 5 produtos mais vendidos (nome + quantidade + valor total gerado)
+- Produto mais vendido em destaque
+
+**Filtros de período:**
+- Hoje (padrão)
+- Esta semana
+- Este mês
+- Intervalo personalizado (date picker)
+
+**Histórico de fechamentos:**
+- Lista dos fechamentos de caixa anteriores com data e total
+- Clique em cada fechamento abre o detalhe completo daquele dia
+
+**Exportação:**
+- Botão "Exportar PDF" gera relatório simples com jsPDF
+- Inclui logo da RM Modas, período, totais por forma de pagamento, lista de produtos vendidos
+
+---
+
+## SEGURANÇA — OBRIGATÓRIO E NÃO NEGOCIÁVEL
+
+Implementar **todos** os itens abaixo sem exceção. Qualquer endpoint, rota ou funcionalidade criada deve seguir estas regras integralmente.
+
+### Parte 1 — Infraestrutura e transporte
+
+- **Autenticação interna de API:** mesmo sem login de usuário, todas as rotas do backend devem exigir uma chave de API interna (`X-API-Key` no header), gerada como secret longo e armazenada em `.env`. O frontend envia essa chave em todas as requisições via variável de ambiente do Vercel.
+- **JWT de curta expiração:** implementar JWT com expiração de 15 minutos + refresh token de 7 dias. Refresh token armazenado em cookie `httpOnly` + `Secure` + `SameSite=Strict`. Logout invalida o refresh token no banco.
+- **Bloqueio de tentativas excessivas:** rate limiting por IP em todas as rotas de autenticação (máximo 5 tentativas em 10 minutos, bloqueio de 30 minutos após exceder). Usar `express-rate-limit`.
+- **CORS restrito:** permitir apenas os domínios de produção do Vercel e localhost em desenvolvimento. Nunca usar `origin: *`.
+- **Secrets em .env:** todas as chaves, tokens, credenciais (Cloudinary, banco, JWT secret, API key interna) devem estar em `.env`. O arquivo `.env` deve estar no `.gitignore`. Criar `.env.example` com as variáveis sem valores.
+- **Rate limiting geral:** aplicar `express-rate-limit` em todas as rotas (não apenas autenticação) com limites razoáveis por IP.
+- **Queries parametrizadas:** zero concatenação de strings em queries SQL. Usar Prisma em todas as operações de banco — nunca construir SQL manualmente.
+- **Stack trace:** nunca expor stack traces ao frontend. Em produção, retornar apenas `{ error: "Erro interno" }` com status 500. Logar o erro completo apenas no servidor.
+- **Limite de body:** usar `express.json({ limit: '10kb' })` e `express.urlencoded({ limit: '10kb' })` em todas as rotas. Rotas de upload têm limite separado de 6MB.
+- **HTTPS forçado:** em produção, redirecionar qualquer requisição HTTP para HTTPS via middleware.
+- **Headers de segurança:** usar `helmet` para aplicar automaticamente: `Content-Security-Policy`, `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Strict-Transport-Security`, `Referrer-Policy`.
+
+### Parte 2 — Dados, uploads e integrações
+
+- **Sanitização e validação de input:** usar `express-validator` em todas as rotas. Validar tipo, tamanho, formato e conteúdo de cada campo. Sanitizar strings contra XSS antes de salvar no banco.
+- **Logs sanitizados:** nunca logar senhas, tokens, chaves de API, dados de cartão ou informações pessoais sensíveis. Usar um logger estruturado (winston ou pino) com níveis de log separados por ambiente.
+- **Upload de imagens — validação rigorosa:**
+  - Verificar MIME type real do arquivo no servidor (não confiar no Content-Type do cliente) usando `file-type`
+  - Aceitar apenas: `image/jpeg`, `image/png`, `image/webp`
+  - Tamanho máximo: 5MB
+  - Renomear o arquivo com UUID antes de enviar ao Cloudinary — nunca usar o nome original do arquivo
+  - Nunca servir o arquivo como executável
+  - Nunca salvar arquivos de upload no servidor — enviar direto ao Cloudinary via stream
+- **SSL no banco:** garantir que a conexão com o PostgreSQL do Railway use SSL (`sslmode=require` na string de conexão).
+- **Retry com backoff em APIs externas:** chamadas ao Cloudinary devem ter retry automático com backoff exponencial (máximo 3 tentativas) em caso de falha de rede.
+- **Proteção contra NoSQL/SQL injection:** além do Prisma, sanitizar inputs antes de qualquer uso em filtros ou buscas.
+- **Proteção CSRF:** usar token CSRF em operações de mutação (POST, PUT, DELETE) via `csurf` ou implementação equivalente.
+- **Variáveis de ambiente no frontend:** nunca expor a API key interna ou qualquer secret diretamente no código React. Usar variáveis `VITE_` apenas para valores que podem ser públicos (como a URL base da API). Secrets reais ficam apenas no backend.
+
+---
+
+## ESTRUTURA DE PASTAS
+
+```
+rm-modas/
+├── frontend/               # React + Vite
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── layout/     # Sidebar, Topbar, BottomBar
+│   │   │   ├── caixa/      # Componentes do módulo Caixa
+│   │   │   ├── estoque/    # Componentes do módulo Estoque
+│   │   │   └── relatorio/  # Componentes do módulo Relatório
+│   │   ├── pages/          # CaixaPage, EstoquePage, RelatorioPage
+│   │   ├── hooks/          # useVendas, useEstoque, useRelatorio
+│   │   ├── services/       # api.js (axios configurado com a API key)
+│   │   └── utils/          # formatters, validadores
+│   ├── .env.example
+│   └── vercel.json
+│
+├── backend/                # Node.js + Express
+│   ├── src/
+│   │   ├── routes/         # caixa.js, estoque.js, relatorio.js
+│   │   ├── controllers/    # lógica de negócio separada por módulo
+│   │   ├── middlewares/    # auth.js, rateLimiter.js, errorHandler.js, upload.js
+│   │   ├── prisma/
+│   │   │   └── schema.prisma
+│   │   ├── services/       # cloudinary.js, relatorio.js
+│   │   └── utils/          # logger.js, sanitize.js
+│   ├── .env.example
+│   └── railway.json
+│
+└── README.md
+```
+
+---
+
+## README OBRIGATÓRIO
+
+O README deve conter:
+
+1. Pré-requisitos (Node.js, conta Railway, conta Cloudinary, conta Vercel)
+2. Como configurar as variáveis de ambiente (listar cada variável com descrição)
+3. Como rodar localmente (frontend e backend separados)
+4. Como fazer o deploy no Railway (backend) e Vercel (frontend)
+5. Como configurar o banco PostgreSQL no Railway e rodar as migrations do Prisma
+6. Como configurar o Cloudinary e obter as credenciais
+
+---
+
+## COMPORTAMENTO RESPONSIVO
+
+- **Desktop (> 1024px):** layout completo com sidebar expandida
+- **Tablet (768px–1024px):** sidebar colapsa para só ícones (56px)
+- **Mobile (< 768px):** sidebar vira menu bottom navigation com 4 ícones, topbar simplificada, cards em coluna única, formulário de venda ocupa tela cheia
+- Testar em iOS Safari e Android Chrome
+
+---
+
+## SEED DE BANCO
+
+Não criar produtos fictícios. O banco deve iniciar vazio. Criar apenas a estrutura das tabelas via Prisma migrations.
+
+---
+
+## OBSERVAÇÕES FINAIS
+
+- Todo o código deve ser comentado em português
+- Mensagens de erro exibidas ao usuário devem ser em português e amigáveis
+- Datas e valores monetários no formato brasileiro (dd/mm/aaaa e R$ 0,00)
+- Usar `date-fns` com locale `pt-BR` para manipulação de datas
+- Usar `react-hot-toast` para notificações de sucesso e erro
+- Usar `axios` no frontend com interceptor que injeta a API key interna em todas as requisições

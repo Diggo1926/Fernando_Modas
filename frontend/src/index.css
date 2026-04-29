@@ -1,0 +1,248 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Variáveis CSS da identidade visual RM Modas */
+:root {
+  --bg: #F7F5F2;
+  --branco: #FFFFFF;
+  --borda: #E8E4DE;
+  --borda-suave: #F0EDE8;
+  --preto: #111111;
+  --ouro: #B8924A;
+  --ouro-claro: #D4AA6A;
+  --ouro-bg: #FAF6EF;
+  --texto: #2C2825;
+  --texto-md: #6B6460;
+  --texto-leve: #A8A098;
+  --verde: #4A8C65;
+  --verde-bg: #F0F7F3;
+  --vermelho: #B85A4A;
+  --vermelho-bg: #FBF0EE;
+  --azul: #4A6A9C;
+  --azul-bg: #EEF2F8;
+  --roxo: #7A5A9C;
+  --roxo-bg: #F4F0F8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: var(--bg);
+  color: var(--texto);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--borda-suave);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--borda);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ouro);
+}
+
+/* Gradiente ouro usado em bordas e textos */
+.gradient-ouro {
+  background: linear-gradient(135deg, #8A6A20, #C9A84C, #D4AA6A);
+}
+
+/* Texto com gradiente ouro */
+.texto-ouro-gradient {
+  background: linear-gradient(135deg, #8A6A20, #C9A84C, #D4AA6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card padrão */
+.card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+}
+
+/* Botão primário — preto com texto ouro */
+.btn-primario {
+  background-color: var(--preto);
+  color: var(--ouro);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s ease, transform 0.1s ease;
+}
+.btn-primario:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+.btn-primario:active {
+  transform: translateY(0);
+}
+.btn-primario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Botão secundário — borda */
+.btn-secundario {
+  background: transparent;
+  color: var(--texto-md);
+  border: 1px solid var(--borda);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secundario:hover {
+  border-color: var(--vermelho);
+  color: var(--vermelho);
+}
+
+/* Tag de forma de pagamento */
+.tag-pix    { background: var(--verde-bg); color: var(--verde); }
+.tag-dinheiro { background: var(--ouro-bg); color: var(--ouro); }
+.tag-debito  { background: var(--roxo-bg); color: var(--roxo); }
+.tag-credito { background: var(--azul-bg); color: var(--azul); }
+
+.tag-pagamento {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  display: inline-block;
+}
+
+/* Ponto de alerta estoque */
+.ponto-alerta {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--vermelho);
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Animação de entrada dos cards */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animar-entrada {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 17, 17, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
+.modal-box {
+  background: var(--branco);
+  border-radius: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 560px;
+  animation: fadeInUp 0.25s ease;
+}
+
+/* Input padrão */
+.input-padrao {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  color: var(--texto);
+  background: var(--bg);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-padrao:focus {
+  border-color: var(--ouro);
+}
+.input-padrao::placeholder {
+  color: var(--texto-leve);
+}
+
+/* Label padrão */
+.label-padrao {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--texto-md);
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Toggle de seleção (tamanho, forma de pagamento) */
+.toggle-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--borda);
+  background: var(--branco);
+  color: var(--texto-md);
+  font-size: 13px;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toggle-btn:hover {
+  border-color: var(--ouro);
+  color: var(--ouro);
+}
+.toggle-btn.ativo {
+  background: var(--ouro-bg);
+  border-color: var(--ouro);
+  color: var(--ouro);
+  font-weight: 500;
+}
+
+/* Barra de progresso simples */
+.barra-progresso {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--borda-suave);
+  overflow: hidden;
+}
+.barra-progresso-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}

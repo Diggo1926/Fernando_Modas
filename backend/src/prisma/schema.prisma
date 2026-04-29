@@ -1,0 +1,81 @@
+// Schema Prisma — RM Modas
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Categorias possíveis de produto
+// Vestido | Blusa | Calça | Saia | Conjunto | Acessório | Outro
+
+// Tamanhos possíveis
+// PP | P | M | G | GG | Único
+
+model Produto {
+  id          String   @id @default(uuid())
+  nome        String
+  categoria   String
+  tamanho     String
+  cor         String
+  quantidade  Int      @default(0)
+  precoCompra Decimal  @db.Decimal(10, 2)
+  precoVenda  Decimal  @db.Decimal(10, 2)
+  fotoUrl     String?
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vendas   Venda[]
+  entradas EntradaEstoque[]
+
+  @@map("produtos")
+}
+
+model Venda {
+  id             String   @id @default(uuid())
+  produtoId      String
+  quantidade     Int
+  valorTotal     Decimal  @db.Decimal(10, 2)
+  // JSON: [{ forma: "PIX" | "Dinheiro" | "Débito" | "Crédito", valor: number }]
+  formasPagamento String
+  parcelas       Int?
+  cancelada      Boolean  @default(false)
+  dataHora       DateTime @default(now())
+  caixaId        String?
+
+  produto Produto          @relation(fields: [produtoId], references: [id])
+  caixa   FechamentoCaixa? @relation(fields: [caixaId], references: [id])
+
+  @@map("vendas")
+}
+
+model FechamentoCaixa {
+  id             String   @id @default(uuid())
+  data           DateTime
+  totalGeral     Decimal  @db.Decimal(10, 2)
+  totalPix       Decimal  @db.Decimal(10, 2)
+  totalDinheiro  Decimal  @db.Decimal(10, 2)
+  totalDebito    Decimal  @db.Decimal(10, 2)
+  totalCredito   Decimal  @db.Decimal(10, 2)
+  totalPecas     Int
+  createdAt      DateTime @default(now())
+
+  vendas Venda[]
+
+  @@map("fechamentos_caixa")
+}
+
+model EntradaEstoque {
+  id         String   @id @default(uuid())
+  produtoId  String
+  quantidade Int
+  data       DateTime @default(now())
+
+  produto Produto @relation(fields: [produtoId], references: [id])
+
+  @@map("entradas_estoque")
+}
