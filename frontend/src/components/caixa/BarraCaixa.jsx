@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { formatarMoeda } from '../../utils/formatters';
 
-export default function BarraCaixa({ vendas, onFecharCaixa, carregando }) {
+export default function BarraCaixa({ vendas, onFecharCaixa, carregando, isMobile = false }) {
   const [confirmarModal, setConfirmarModal] = useState(false);
   const [fechamento, setFechamento] = useState(null);
 
-  // Calcula totais usando a estrutura normalizada VendaPagamento
   const totais = { PIX: 0, DINHEIRO: 0, DEBITO: 0, CREDITO: 0, geral: 0 };
   for (const v of (vendas ?? []).filter((v) => !v.cancelada)) {
     totais.geral += v.total || 0;
@@ -20,53 +19,81 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando }) {
   }
 
   const linhas = [
-    { key: 'PIX',     label: 'PIX',     cor: 'var(--verde)' },
-    { key: 'DINHEIRO',label: 'Dinheiro',cor: 'var(--ouro)'  },
-    { key: 'DEBITO',  label: 'Débito',  cor: 'var(--roxo)'  },
-    { key: 'CREDITO', label: 'Crédito', cor: 'var(--azul)'  },
+    { key: 'PIX',      label: 'PIX',     cor: 'var(--verde)' },
+    { key: 'DINHEIRO', label: 'Dinheiro', cor: 'var(--ouro)' },
+    { key: 'DEBITO',   label: 'Débito',  cor: 'var(--roxo)'  },
+    { key: 'CREDITO',  label: 'Crédito', cor: 'var(--azul)'  },
   ];
 
   return (
     <>
-      <div
-        style={{
-          background: 'var(--branco)',
-          borderTop: '1px solid var(--borda)',
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexShrink: 0,
-          gap: 12,
-          flexWrap: 'wrap',
-          overflowX: 'auto',
-        }}
-      >
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', minWidth: 0 }}>
-          <div>
+      {isMobile ? (
+        /* Card — mobile: dentro do scroll, abaixo de Últimas Vendas */
+        <div className="card" style={{ padding: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
             <div className="label-padrao">TOTAL DO DIA</div>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'var(--ouro)' }}>
+            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontStyle: 'italic', color: 'var(--ouro)' }}>
               {formatarMoeda(totais.geral)}
             </div>
           </div>
-          <div style={{ width: 1, background: 'var(--borda-suave)', alignSelf: 'stretch' }} />
-          {linhas.map(({ key, label, cor }) => (
-            <div key={key}>
-              <div className="label-padrao">{label.toUpperCase()}</div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: cor }}>{formatarMoeda(totais[key])}</div>
-            </div>
-          ))}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+            {linhas.map(({ key, label, cor }) => (
+              <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                <span style={{ color: 'var(--texto-md)' }}>{label}</span>
+                <span style={{ fontWeight: 500, color: cor }}>{formatarMoeda(totais[key])}</span>
+              </div>
+            ))}
+          </div>
+          <button
+            className="btn-primario"
+            style={{ width: '100%' }}
+            onClick={() => setConfirmarModal(true)}
+            disabled={carregando || totais.geral === 0}
+          >
+            Fechar Caixa
+          </button>
         </div>
-
-        <button
-          className="btn-primario"
-          onClick={() => setConfirmarModal(true)}
-          disabled={carregando || totais.geral === 0}
-          style={{ whiteSpace: 'nowrap' }}
+      ) : (
+        /* Barra fixa — tablet e desktop: abaixo do conteúdo principal */
+        <div
+          style={{
+            background: 'var(--branco)',
+            borderTop: '1px solid var(--borda)',
+            padding: '10px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexShrink: 0,
+            gap: 12,
+            flexWrap: 'wrap',
+            overflowX: 'auto',
+          }}
         >
-          Fechar Caixa
-        </button>
-      </div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', minWidth: 0 }}>
+            <div>
+              <div className="label-padrao">TOTAL DO DIA</div>
+              <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'var(--ouro)' }}>
+                {formatarMoeda(totais.geral)}
+              </div>
+            </div>
+            <div style={{ width: 1, background: 'var(--borda-suave)', alignSelf: 'stretch' }} />
+            {linhas.map(({ key, label, cor }) => (
+              <div key={key}>
+                <div className="label-padrao">{label.toUpperCase()}</div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: cor }}>{formatarMoeda(totais[key])}</div>
+              </div>
+            ))}
+          </div>
+          <button
+            className="btn-primario"
+            onClick={() => setConfirmarModal(true)}
+            disabled={carregando || totais.geral === 0}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Fechar Caixa
+          </button>
+        </div>
+      )}
 
       {/* Modal de confirmação */}
       {confirmarModal && (

@@ -66,6 +66,13 @@ export default function CaixaPage() {
         ) : (
           <UltimasVendas vendas={vendas} onCancelar={cancelarVenda} carregando={carregando} />
         )}
+
+        {/* Totais do dia como card — apenas no mobile, dentro do scroll */}
+        {isMobile && (
+          <div style={{ marginTop: 20 }}>
+            <BarraCaixa vendas={vendas} onFecharCaixa={fecharCaixa} carregando={carregando} isMobile />
+          </div>
+        )}
       </div>
 
       {/* Drawer — mobile: sobe de baixo */}
@@ -103,8 +110,8 @@ export default function CaixaPage() {
         </div>
       )}
 
-      {/* Barra de fechamento de caixa */}
-      <BarraCaixa vendas={vendas} onFecharCaixa={fecharCaixa} carregando={carregando} />
+      {/* Barra de totais — tablet e desktop: fixa no bottom */}
+      {!isMobile && <BarraCaixa vendas={vendas} onFecharCaixa={fecharCaixa} carregando={carregando} />}
     </div>
   );
 }

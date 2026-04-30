@@ -41,14 +41,17 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
   }, [form.busca]);
 
   function selecionarProduto(p) {
-    setForm((f) => ({
-      ...f,
-      busca: p.nome,
-      produtoSelecionado: p,
-      sugestoes: [],
-      tamanho: p.tamanho,
-      valorTotal: String(Number(p.precoVenda).toFixed(2)),
-    }));
+    setForm((f) => {
+      const qtd = Math.max(1, parseInt(f.quantidade) || 1);
+      return {
+        ...f,
+        busca: p.nome,
+        produtoSelecionado: p,
+        sugestoes: [],
+        tamanho: p.tamanho,
+        valorTotal: String((qtd * Number(p.precoVenda)).toFixed(2)),
+      };
+    });
   }
 
   function toggleForma(formaApi) {
@@ -160,12 +163,26 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
         <div>
           <label className="label-padrao">QUANTIDADE</label>
           <input className="input-padrao" type="number" min="1" value={form.quantidade}
-            onChange={(e) => setForm((f) => ({ ...f, quantidade: e.target.value }))} />
+            onChange={(e) => {
+              const qtd = e.target.value;
+              setForm((f) => ({
+                ...f,
+                quantidade: qtd,
+                valorTotal: f.produtoSelecionado
+                  ? String((Math.max(1, parseInt(qtd) || 1) * Number(f.produtoSelecionado.precoVenda)).toFixed(2))
+                  : f.valorTotal,
+              }));
+            }} />
         </div>
         <div>
-          <label className="label-padrao">VALOR TOTAL (R$)</label>
+          <label className="label-padrao">VALOR TOTAL</label>
           <input className="input-padrao" type="number" step="0.01" min="0" value={form.valorTotal}
             onChange={(e) => setForm((f) => ({ ...f, valorTotal: e.target.value }))} />
+          {form.valorTotal && (
+            <div style={{ fontSize: 11, color: 'var(--ouro)', marginTop: 3 }}>
+              {formatarMoeda(Number(form.valorTotal))}
+            </div>
+          )}
         </div>
       </div>
 

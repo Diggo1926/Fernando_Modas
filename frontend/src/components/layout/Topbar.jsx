@@ -29,18 +29,25 @@ export default function Topbar() {
         flexShrink: 0,
       }}
     >
-      <h1
-        style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: isMobile ? 20 : 22,
-          fontStyle: 'italic',
-          fontWeight: 300,
-          color: '#FFFFFF',
-          letterSpacing: 0.5,
-        }}
-      >
-        {titulo}
-      </h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <img
+          src="/logo.svg"
+          alt="RM Modas"
+          style={{ width: isMobile ? 32 : 36, height: isMobile ? 32 : 36, flexShrink: 0 }}
+        />
+        <h1
+          style={{
+            fontFamily: 'Cormorant Garamond, serif',
+            fontSize: isMobile ? 20 : 22,
+            fontStyle: 'italic',
+            fontWeight: 300,
+            color: '#FFFFFF',
+            letterSpacing: 0.5,
+          }}
+        >
+          {titulo}
+        </h1>
+      </div>
 
       <span
         style={{
