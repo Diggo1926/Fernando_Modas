@@ -10,7 +10,7 @@ datasource db {
 }
 
 // Categorias possíveis de produto
-// Vestido | Blusa | Calça | Saia | Conjunto | Acessório | Outro
+// Vestido | Blusa | Calça | Saia | Conjunto | Acessório | Body | Calça de Alfaiataria | Short de Alfaiataria | Camisa de Alfaiataria | Outro
 
 // Tamanhos possíveis
 // PP | P | M | G | GG | Único

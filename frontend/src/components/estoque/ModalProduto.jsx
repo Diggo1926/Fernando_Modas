@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { calcularMargem } from '../../utils/formatters';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Outro'];
+const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Outro'];
 const TAMANHOS   = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
 const LIMITE_FOTO = 5 * 1024 * 1024;
 

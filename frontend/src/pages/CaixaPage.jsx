@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useVendas } from '../hooks/useVendas';
-import { useEstoque } from '../hooks/useEstoque';
 import { useWindowSize } from '../hooks/useWindowSize';
 import MetricasCards from '../components/caixa/MetricasCards';
 import UltimasVendas from '../components/caixa/UltimasVendas';
-import AlertaEstoque from '../components/caixa/AlertaEstoque';
 import FormVenda from '../components/caixa/FormVenda';
 import BarraCaixa from '../components/caixa/BarraCaixa';
 
 export default function CaixaPage() {
   const { vendas, metricas, carregando, buscarVendas, buscarMetricas, registrarVenda, cancelarVenda, fecharCaixa } = useVendas();
-  const { baixoEstoque, buscarBaixoEstoque } = useEstoque();
   const { width } = useWindowSize();
   const isMobile  = width < 768;
   const isTablet  = width >= 768 && width < 1024;
@@ -21,7 +18,6 @@ export default function CaixaPage() {
   useEffect(() => {
     buscarVendas();
     buscarMetricas();
-    buscarBaixoEstoque();
   }, []);
 
   async function handleVenda(dados) {
@@ -38,13 +34,6 @@ export default function CaixaPage() {
 
         {/* Cards de métricas — responsivos */}
         <MetricasCards metricas={metricas} isMobile={isMobile} isTablet={isTablet} />
-
-        {/* Alerta de estoque baixo */}
-        {baixoEstoque.length > 0 && (
-          <div style={{ marginBottom: 20 }}>
-            <AlertaEstoque produtos={baixoEstoque} />
-          </div>
-        )}
 
         {/* Botão Nova Venda (mobile e tablet) */}
         {!isDesktop && (

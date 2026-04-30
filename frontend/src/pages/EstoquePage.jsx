@@ -6,7 +6,7 @@ import ModalProduto from '../components/estoque/ModalProduto';
 import ModalReposicao from '../components/estoque/ModalReposicao';
 import ListaReposicao from '../components/estoque/ListaReposicao';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Outro'];
+const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Outro'];
 const TAMANHOS = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
 
 export default function EstoquePage() {
