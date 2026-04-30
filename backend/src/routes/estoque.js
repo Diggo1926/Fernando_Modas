@@ -14,7 +14,7 @@ const {
   listaBaixoEstoque,
 } = require('../controllers/estoqueController');
 
-const CATEGORIAS_VALIDAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Outro'];
+const CATEGORIAS_VALIDAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
 const TAMANHOS_VALIDOS = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
 
 const validacoesProduto = [
