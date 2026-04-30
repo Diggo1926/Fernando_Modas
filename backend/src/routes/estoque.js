@@ -2,7 +2,7 @@
 const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
-const { upload, validarMimeReal } = require('../middlewares/upload');
+const { uploadMiddleware, validarMime } = require('../middlewares/upload');
 const { limitadorRestrito } = require('../middlewares/rateLimiter');
 const {
   listarProdutos,
@@ -40,8 +40,8 @@ router.get('/:id', [param('id').isInt({ min: 1 }).toInt()], buscarProduto);
 router.post(
   '/',
   limitadorRestrito,
-  upload.single('foto'),
-  validarMimeReal,
+  uploadMiddleware,
+  validarMime,
   validacoesProduto,
   criarProduto
 );
@@ -50,8 +50,8 @@ router.post(
 router.put(
   '/:id',
   limitadorRestrito,
-  upload.single('foto'),
-  validarMimeReal,
+  uploadMiddleware,
+  validarMime,
   [param('id').isInt({ min: 1 }).toInt(), ...validacoesProduto],
   atualizarProduto
 );
