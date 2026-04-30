@@ -22,9 +22,9 @@ const validacoesProduto = [
   body('categoria').isIn(CATEGORIAS_VALIDAS).withMessage('Categoria inválida'),
   body('tamanho').isIn(TAMANHOS_VALIDOS).withMessage('Tamanho inválido'),
   body('cor').trim().isLength({ min: 2, max: 50 }).withMessage('Cor deve ter entre 2 e 50 caracteres'),
-  body('quantidade').isInt({ min: 0 }).withMessage('Quantidade deve ser um número inteiro positivo'),
-  body('precoCusto').isFloat({ min: 0 }).withMessage('Preço de custo inválido'),
-  body('precoVenda').isFloat({ min: 0.01 }).withMessage('Preço de venda inválido'),
+  body('quantidade').isInt({ min: 0 }).withMessage('Quantidade deve ser um número inteiro positivo').toInt(),
+  body('precoCusto').isFloat({ min: 0 }).withMessage('Preço de custo inválido').toFloat(),
+  body('precoVenda').isFloat({ min: 0.01 }).withMessage('Preço de venda inválido').toFloat(),
 ];
 
 // GET /estoque — lista produtos

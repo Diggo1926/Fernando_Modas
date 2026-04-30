@@ -89,7 +89,7 @@ async function criarProduto(req, res, next) {
 async function atualizarProduto(req, res, next) {
   const erros = validationResult(req);
   if (!erros.isEmpty()) {
-    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+    return res.status(400).json({ erro: 'Dados inválidos', detalhes: erros.array() });
   }
 
   try {
@@ -97,33 +97,28 @@ async function atualizarProduto(req, res, next) {
     const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
-    const { nome, categoria, tamanho, cor, quantidade, precoCusto, precoVenda } = req.body;
-
-    let fotoUrl = produto.fotoUrl;
-    let fotoPublicId = produto.fotoPublicId;
+    const dadosAtualizar = {
+      nome:       sanitizarString(req.body.nome),
+      categoria:  sanitizarString(req.body.categoria),
+      tamanho:    sanitizarString(req.body.tamanho),
+      cor:        sanitizarString(req.body.cor),
+      quantidade: parseInt(req.body.quantidade),
+      precoCusto: parseFloat(req.body.precoCusto),
+      precoVenda: parseFloat(req.body.precoVenda),
+    };
 
     if (req.file) {
       if (produto.fotoPublicId) {
         await removerImagem(produto.fotoPublicId);
       }
-      const resultado = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
-      fotoUrl = resultado.url;
-      fotoPublicId = resultado.publicId;
+      const { url, publicId } = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
+      dadosAtualizar.fotoUrl = url;
+      dadosAtualizar.fotoPublicId = publicId;
     }
 
     const atualizado = await prisma.produto.update({
       where: { id },
-      data: {
-        nome: sanitizarString(nome),
-        categoria: sanitizarString(categoria),
-        tamanho: sanitizarString(tamanho),
-        cor: sanitizarString(cor),
-        quantidade: parseInt(quantidade),
-        precoCusto: parseFloat(precoCusto),
-        precoVenda: parseFloat(precoVenda),
-        fotoUrl,
-        fotoPublicId,
-      },
+      data: dadosAtualizar,
     });
 
     logger.info({ produtoId: atualizado.id }, 'Produto atualizado');
