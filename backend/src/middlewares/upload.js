@@ -23,7 +23,7 @@ const upload = multer({
 
 // Middleware de validação real do MIME type (baseado no conteúdo binário)
 async function validarMimeReal(req, res, next) {
-  if (!req.file) return next();
+  if (!req.file || !req.file.buffer || req.file.buffer.length === 0) return next();
 
   try {
     const tipo = await fileTypeFromBuffer(req.file.buffer);

@@ -103,7 +103,9 @@ async function atualizarProduto(req, res, next) {
     let fotoPublicId = produto.fotoPublicId;
 
     if (req.file) {
-      await removerImagem(produto.fotoPublicId);
+      if (produto.fotoPublicId) {
+        await removerImagem(produto.fotoPublicId);
+      }
       const resultado = await enviarImagem(req.file.buffer, req.file.mimeTypeReal);
       fotoUrl = resultado.url;
       fotoPublicId = resultado.publicId;
