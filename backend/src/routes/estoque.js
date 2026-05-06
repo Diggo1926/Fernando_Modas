@@ -14,8 +14,8 @@ const {
   listaBaixoEstoque,
 } = require('../controllers/estoqueController');
 
-const CATEGORIAS_VALIDAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
-const TAMANHOS_VALIDOS = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
+const CATEGORIAS_VALIDAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
+const TAMANHOS_VALIDOS = ['PP', 'P', 'M', 'G', 'GG', 'GGG', 'Único', '36', '38', '40', '42', '44', '46'];
 
 const validacoesProduto = [
   body('nome').trim().isLength({ min: 2, max: 100 }).withMessage('Nome deve ter entre 2 e 100 caracteres'),

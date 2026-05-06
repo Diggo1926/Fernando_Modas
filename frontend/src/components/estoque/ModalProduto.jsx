@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { calcularMargem } from '../../utils/formatters';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
-const TAMANHOS   = ['PP', 'P', 'M', 'G', 'GG', 'Único'];
+const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
+const TAMANHOS_LETRAS  = ['P', 'M', 'G', 'GG', 'GGG'];
+const TAMANHOS_NUMEROS = ['36', '38', '40', '42', '44', '46'];
+
+function tipoDoTamanho(t) {
+  if (TAMANHOS_NUMEROS.includes(t)) return 'numeros';
+  return 'letras';
+}
 const LIMITE_FOTO = 5 * 1024 * 1024;
 
 export default function ModalProduto({ produto, onFechar, onSalvar, carregando }) {
@@ -11,9 +17,11 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
     quantidade: '0', precoCusto: '', precoVenda: '',
     foto: null, fotoPreview: null,
   });
+  const [tipoTamanho, setTipoTamanho] = useState('letras');
 
   useEffect(() => {
     if (produto) {
+      setTipoTamanho(tipoDoTamanho(produto.tamanho || ''));
       setForm({
         nome: produto.nome || '',
         categoria: produto.categoria || '',
@@ -27,6 +35,11 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
       });
     }
   }, [produto]);
+
+  function mudarTipoTamanho(tipo) {
+    setTipoTamanho(tipo);
+    setForm((f) => ({ ...f, tamanho: '' }));
+  }
 
   const margem = calcularMargem(form.precoCusto, form.precoVenda);
 
@@ -108,9 +121,27 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
 
           {/* Tamanho */}
           <div>
-            <label className="label-padrao">TAMANHO</label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <label className="label-padrao" style={{ margin: 0 }}>TAMANHO</label>
+              <div style={{ display: 'flex', gap: 4, background: 'var(--bg)', border: '1px solid var(--borda)', borderRadius: 6, padding: 3 }}>
+                <button type="button"
+                  onClick={() => mudarTipoTamanho('letras')}
+                  style={{ padding: '4px 12px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 11, fontFamily: 'Montserrat, sans-serif', fontWeight: 600, transition: 'all .15s',
+                    background: tipoTamanho === 'letras' ? 'var(--ouro, #B8924A)' : 'transparent',
+                    color: tipoTamanho === 'letras' ? '#fff' : 'var(--texto-md)' }}>
+                  Letras
+                </button>
+                <button type="button"
+                  onClick={() => mudarTipoTamanho('numeros')}
+                  style={{ padding: '4px 12px', borderRadius: 4, border: 'none', cursor: 'pointer', fontSize: 11, fontFamily: 'Montserrat, sans-serif', fontWeight: 600, transition: 'all .15s',
+                    background: tipoTamanho === 'numeros' ? 'var(--ouro, #B8924A)' : 'transparent',
+                    color: tipoTamanho === 'numeros' ? '#fff' : 'var(--texto-md)' }}>
+                  Números
+                </button>
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {TAMANHOS.map((t) => (
+              {(tipoTamanho === 'letras' ? TAMANHOS_LETRAS : TAMANHOS_NUMEROS).map((t) => (
                 <button key={t} type="button"
                   className={`toggle-btn${form.tamanho === t ? ' ativo' : ''}`}
                   onClick={() => setForm((f) => ({ ...f, tamanho: t }))}>
