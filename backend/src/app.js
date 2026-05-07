@@ -21,6 +21,9 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+// Health check antes do CORS — probes sem Origin header (Railway, monitoramento) não devem ser bloqueados
+app.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
 // Headers de segurança via helmet
 app.use(helmet({
   contentSecurityPolicy: {
@@ -57,9 +60,6 @@ app.use(express.urlencoded({ extended: false, limit: '10kb' }));
 
 // Rate limiting geral
 app.use(limitadorGeral);
-
-// Health check (sem autenticação — usado pelo Railway)
-app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 // Todas as rotas da API exigem a API Key interna
 app.use('/api', autenticarApiKey);
