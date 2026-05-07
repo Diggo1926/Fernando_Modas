@@ -76,8 +76,13 @@ async function registrarVenda(req, res, next) {
 
 // Cancela uma venda e devolve as quantidades ao estoque
 async function cancelarVenda(req, res, next) {
+  const erros = validationResult(req);
+  if (!erros.isEmpty()) {
+    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+  }
+
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
 
     const venda = await prisma.venda.findUnique({
       where: { id },

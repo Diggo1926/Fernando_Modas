@@ -34,9 +34,14 @@ async function listarProdutos(req, res, next) {
 
 // Busca produto por ID
 async function buscarProduto(req, res, next) {
+  const erros = validationResult(req);
+  if (!erros.isEmpty()) {
+    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+  }
+
   try {
     const produto = await prisma.produto.findFirst({
-      where: { id: parseInt(req.params.id), ativo: true },
+      where: { id: req.params.id, ativo: true },
     });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
     res.json(produto);
@@ -130,8 +135,13 @@ async function atualizarProduto(req, res, next) {
 
 // Inativa produto (soft delete)
 async function deletarProduto(req, res, next) {
+  const erros = validationResult(req);
+  if (!erros.isEmpty()) {
+    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+  }
+
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 

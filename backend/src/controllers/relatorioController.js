@@ -1,5 +1,6 @@
 // Controller do módulo Relatório
 const { PrismaClient } = require('@prisma/client');
+const { validationResult } = require('express-validator');
 const { gerarResumo } = require('../services/relatorio');
 const logger = require('../utils/logger');
 
@@ -25,11 +26,20 @@ async function resumoPeriodo(req, res, next) {
       fim = new Date(agora);
       fim.setHours(23, 59, 59, 999);
     } else if (periodo === 'personalizado' && inicioParam && fimParam) {
-      inicio = new Date(inicioParam);
-      fim = new Date(fimParam);
-      fim.setHours(23, 59, 59, 999);
+      const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!isoRegex.test(inicioParam) || !isoRegex.test(fimParam)) {
+        return res.status(400).json({ erro: 'Datas devem estar no formato YYYY-MM-DD' });
+      }
+      inicio = new Date(inicioParam + 'T00:00:00');
+      fim = new Date(fimParam + 'T23:59:59.999');
       if (isNaN(inicio) || isNaN(fim)) {
         return res.status(400).json({ erro: 'Datas inválidas para o período personalizado' });
+      }
+      if (inicio > fim) {
+        return res.status(400).json({ erro: 'Data de início deve ser anterior à data de fim' });
+      }
+      if (fim - inicio > 366 * 24 * 60 * 60 * 1000) {
+        return res.status(400).json({ erro: 'O período personalizado não pode exceder 1 ano' });
       }
     } else {
       inicio = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 0, 0, 0);
@@ -59,8 +69,13 @@ async function listarFechamentos(req, res, next) {
 
 // Detalhe de um fechamento de caixa específico
 async function detalharFechamento(req, res, next) {
+  const erros = validationResult(req);
+  if (!erros.isEmpty()) {
+    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+  }
+
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
 
     const fechamento = await prisma.fechamentoCaixa.findUnique({
       where: { id },
