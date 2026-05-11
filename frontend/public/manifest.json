@@ -1,7 +1,7 @@
 {
-  "name": "RM Modas",
-  "short_name": "RM Modas",
-  "description": "Sistema de gestão da loja RM Modas",
+  "name": "A Bella Modas",
+  "short_name": "A Bella",
+  "description": "Sistema de gestão da loja A Bella Modas",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111111",

@@ -1,6 +1,6 @@
-# RM Modas — Sistema de Gestão
+# A Bella Modas — Sistema de Gestão
 
-Sistema de gestão interno para a loja RM Modas (Itabaiana/SE). Cobre caixa, estoque e relatórios.
+Sistema de gestão interno para a loja A Bella Modas (Itabaiana/SE). Cobre caixa, estoque e relatórios.
 
 ---
 
@@ -110,7 +110,7 @@ VITE_API_KEY=sua_api_key_aqui
 ## Estrutura do Projeto
 
 ```
-rm-modas/
+a-bella-modas/
 ├── frontend/               # React + Vite
 │   ├── src/
 │   │   ├── components/     # Componentes por módulo

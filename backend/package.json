@@ -1,7 +1,7 @@
 {
-  "name": "rm-modas-backend",
+  "name": "a-bella-modas-backend",
   "version": "1.0.0",
-  "description": "Backend do sistema de gestão RM Modas",
+  "description": "Backend do sistema de gestão A Bella Modas",
   "main": "src/server.js",
   "scripts": {
     "build": "prisma generate",

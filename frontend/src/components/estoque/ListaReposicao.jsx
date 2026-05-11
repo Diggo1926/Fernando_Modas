@@ -19,7 +19,7 @@ export default function ListaReposicao({ produtos = [], onFechar }) {
     const doc = new jsPDF();
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(16);
-    doc.text('RM Modas — Lista de Reposição', 14, 20);
+    doc.text('A Bella Modas — Lista de Reposição', 14, 20);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
     doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 28);
@@ -32,7 +32,7 @@ export default function ListaReposicao({ produtos = [], onFechar }) {
       headStyles: { fillColor: [17, 17, 17] },
     });
 
-    doc.save('lista-reposicao-rm-modas.pdf');
+    doc.save('lista-reposicao-a-bella-modas.pdf');
   }
 
   return (

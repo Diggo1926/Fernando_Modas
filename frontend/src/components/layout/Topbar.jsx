@@ -13,7 +13,7 @@ export default function Topbar() {
   const { pathname } = useLocation();
   const { width } = useWindowSize();
   const isMobile = width < 768;
-  const titulo = titulos[pathname] || 'RM Modas';
+  const titulo = titulos[pathname] || 'A Bella Modas';
   const hoje = format(new Date(), isMobile ? "dd/MM/yyyy" : "EEEE, dd 'de' MMMM", { locale: ptBR });
 
   return (
@@ -31,9 +31,16 @@ export default function Topbar() {
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <img
-          src="/logo.svg"
-          alt="RM Modas"
-          style={{ width: isMobile ? 32 : 36, height: isMobile ? 32 : 36, flexShrink: 0 }}
+          src="/logo-abella.jpeg"
+          alt="A Bella Modas"
+          style={{
+            width: isMobile ? 32 : 36,
+            height: isMobile ? 32 : 36,
+            borderRadius: '50%',
+            objectFit: 'cover',
+            border: '2px solid #B8924A',
+            flexShrink: 0,
+          }}
         />
         <h1
           style={{

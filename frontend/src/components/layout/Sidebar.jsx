@@ -75,7 +75,7 @@ export default function Sidebar({ collapsed }) {
                 lineHeight: 1.1,
               }}
             >
-              RM
+              A Bella
             </div>
             <div
               style={{
@@ -143,36 +143,17 @@ export default function Sidebar({ collapsed }) {
 
 function Logo({ tamanho }) {
   return (
-    <div
+    <img
+      src="/logo-abella.jpeg"
+      alt="A Bella Modas"
       style={{
         width: tamanho,
         height: tamanho,
         borderRadius: '50%',
-        background: 'var(--preto)',
-        border: '2px solid transparent',
-        backgroundClip: 'padding-box',
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        objectFit: 'cover',
+        border: '2px solid #B8924A',
         flexShrink: 0,
-        boxShadow: '0 0 0 2px #C9A84C',
       }}
-    >
-      <span
-        style={{
-          fontFamily: 'Cormorant Garamond, serif',
-          fontSize: tamanho * 0.38,
-          fontStyle: 'italic',
-          fontWeight: 400,
-          background: 'linear-gradient(135deg, #8A6A20, #C9A84C, #D4AA6A)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          lineHeight: 1,
-        }}
-      >
-        RM
-      </span>
-    </div>
+    />
   );
 }

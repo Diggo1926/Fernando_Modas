@@ -1,4 +1,4 @@
-// Schema Prisma — RM Modas
+// Schema Prisma — A Bella Modas
 
 generator client {
   provider = "prisma-client-js"

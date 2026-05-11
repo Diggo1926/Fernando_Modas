@@ -39,7 +39,7 @@ export default function RelatorioPage() {
   function exportarPDF() {
     if (!resumo) return;
     const doc = new jsPDF();
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('RM Modas', 14, 20);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(18); doc.text('A Bella Modas', 14, 20);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.text('Relatório de Vendas', 14, 28);
     doc.setFontSize(9);
     doc.text(`Período: ${PERIODOS.find((p) => p.key === periodo)?.label || periodo}`, 14, 35);
@@ -72,7 +72,7 @@ export default function RelatorioPage() {
         headStyles: { fillColor: [17, 17, 17] },
       });
     }
-    doc.save('relatorio-rm-modas.pdf');
+    doc.save('relatorio-a-bella-modas.pdf');
   }
 
   return (
