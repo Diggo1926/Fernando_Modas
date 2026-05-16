@@ -4,6 +4,7 @@ import { calcularMargem } from '../../utils/formatters';
 const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
 const TAMANHOS_LETRAS  = ['P', 'M', 'G', 'GG', 'GGG'];
 const TAMANHOS_NUMEROS = ['36', '38', '40', '42', '44', '46'];
+const CATEGORIAS_UNICO = ['Body', 'Cropped'];
 
 function tipoDoTamanho(t) {
   if (TAMANHOS_NUMEROS.includes(t)) return 'numeros';
@@ -148,6 +149,13 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
                   {t}
                 </button>
               ))}
+              {tipoTamanho === 'letras' && CATEGORIAS_UNICO.includes(form.categoria) && (
+                <button key="U" type="button"
+                  className={`toggle-btn${form.tamanho === 'U' ? ' ativo' : ''}`}
+                  onClick={() => setForm((f) => ({ ...f, tamanho: 'U' }))}>
+                  U
+                </button>
+              )}
             </div>
           </div>
 

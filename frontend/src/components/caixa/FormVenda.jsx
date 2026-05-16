@@ -3,7 +3,7 @@ import api from '../../services/api';
 import { formatarMoeda } from '../../utils/formatters';
 import toast from 'react-hot-toast';
 
-const TAMANHOS = ['P', 'M', 'G', 'GG', 'GGG', '36', '38', '40', '42', '44', '46'];
+const TAMANHOS = ['P', 'M', 'G', 'GG', 'GGG', 'U', '36', '38', '40', '42', '44', '46'];
 
 // Formas: label exibido → chave da API
 const FORMAS = [
