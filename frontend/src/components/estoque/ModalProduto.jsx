@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { calcularMargem } from '../../utils/formatters';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
+const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
 const TAMANHOS_LETRAS  = ['P', 'M', 'G', 'GG', 'GGG'];
 const TAMANHOS_NUMEROS = ['36', '38', '40', '42', '44', '46'];
-const CATEGORIAS_UNICO = ['Body', 'Cropped'];
+const CATEGORIAS_UNICO = ['Boddy', 'Cropped'];
 
 function tipoDoTamanho(t) {
   if (TAMANHOS_NUMEROS.includes(t)) return 'numeros';
