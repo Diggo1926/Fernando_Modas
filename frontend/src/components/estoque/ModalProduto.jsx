@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { calcularMargem } from '../../utils/formatters';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Outro'];
+const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Short Jeans Cargo', 'Calça Jeans Cargo', 'Calça Flare', 'Outro'];
 const TAMANHOS_LETRAS  = ['P', 'M', 'G', 'GG', 'GGG'];
 const TAMANHOS_NUMEROS = ['36', '38', '40', '42', '44', '46'];
-const CATEGORIAS_UNICO = ['Boddy', 'Cropped'];
+const CATEGORIAS_UNICO = ['Boddy', 'Cropped', 'Vestido', 'Blusa'];
 
 function tipoDoTamanho(t) {
   if (TAMANHOS_NUMEROS.includes(t)) return 'numeros';
@@ -153,7 +153,7 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
                 <button key="U" type="button"
                   className={`toggle-btn${form.tamanho === 'U' ? ' ativo' : ''}`}
                   onClick={() => setForm((f) => ({ ...f, tamanho: 'U' }))}>
-                  U
+                  U — Tamanho Único
                 </button>
               )}
             </div>
