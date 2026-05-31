@@ -28,7 +28,7 @@ const SIGLAS = {
 
 async function adicionarColuna() {
   await prisma.$executeRawUnsafe(`
-    ALTER TABLE "produtos"
+    ALTER TABLE "Produto"
     ADD COLUMN IF NOT EXISTS "codigo" TEXT;
   `);
   await prisma.$executeRawUnsafe(`
@@ -36,9 +36,9 @@ async function adicionarColuna() {
     BEGIN
       IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
-        WHERE tablename = 'produtos' AND indexname = 'produtos_codigo_key'
+        WHERE tablename = 'Produto' AND indexname = 'Produto_codigo_key'
       ) THEN
-        CREATE UNIQUE INDEX "produtos_codigo_key" ON "produtos"("codigo");
+        CREATE UNIQUE INDEX "Produto_codigo_key" ON "Produto"("codigo");
       END IF;
     END $$;
   `);
@@ -46,7 +46,7 @@ async function adicionarColuna() {
 
 async function migrarCodigos() {
   const semCodigo = await prisma.$queryRawUnsafe(`
-    SELECT id, categoria FROM "produtos"
+    SELECT id, categoria FROM "Produto"
     WHERE "codigo" IS NULL AND "ativo" = true
     ORDER BY "createdAt" ASC
   `);
@@ -62,7 +62,7 @@ async function migrarCodigos() {
 
   for (const [sigla, lista] of Object.entries(porSigla)) {
     const existentes = await prisma.$queryRawUnsafe(`
-      SELECT "codigo" FROM "produtos"
+      SELECT "codigo" FROM "Produto"
       WHERE "codigo" LIKE '${sigla}-%'
     `);
 
@@ -79,7 +79,7 @@ async function migrarCodigos() {
     for (const produto of lista) {
       const codigo = `${sigla}-${String(contador).padStart(3, '0')}`;
       await prisma.$executeRawUnsafe(
-        `UPDATE "produtos" SET "codigo" = $1 WHERE "id" = $2`,
+        `UPDATE "Produto" SET "codigo" = $1 WHERE "id" = $2`,
         codigo,
         produto.id
       );
