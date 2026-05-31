@@ -255,11 +255,11 @@ async function reporEstoque(req, res, next) {
   }
 }
 
-// Lista produtos com estoque baixo (≤ 1)
+// Lista produtos com estoque zerado (= 0)
 async function listaBaixoEstoque(req, res, next) {
   try {
     const produtos = await prisma.produto.findMany({
-      where: { ativo: true, quantidade: { lte: 1 } },
+      where: { ativo: true, quantidade: 0 },
       orderBy: { quantidade: 'asc' },
     });
     res.json(produtos ?? []);
