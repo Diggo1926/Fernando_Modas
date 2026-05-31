@@ -7,6 +7,7 @@ const { limitadorRestrito } = require('../middlewares/rateLimiter');
 const {
   listarProdutos,
   buscarProduto,
+  buscarPorCodigo,
   criarProduto,
   atualizarProduto,
   deletarProduto,
@@ -32,6 +33,21 @@ router.get('/', listarProdutos);
 
 // GET /estoque/baixo-estoque — produtos com quantidade ≤ 3
 router.get('/baixo-estoque', listaBaixoEstoque);
+
+// GET /estoque/codigo/:codigo — busca por código (scanner)
+// Deve vir antes de /:id para não colidir com o segmento "codigo" como ID
+router.get(
+  '/codigo/:codigo',
+  limitadorRestrito,
+  [
+    param('codigo')
+      .trim()
+      .toUpperCase()
+      .matches(/^[A-Z]{2,5}-\d{3,6}$/)
+      .withMessage('Formato de código inválido'),
+  ],
+  buscarPorCodigo
+);
 
 // GET /estoque/:id — busca produto por ID
 router.get('/:id', [param('id').isInt({ min: 1 }).toInt()], buscarProduto);

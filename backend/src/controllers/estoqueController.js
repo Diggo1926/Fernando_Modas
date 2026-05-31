@@ -7,6 +7,49 @@ const logger = require('../utils/logger');
 
 const prisma = new PrismaClient();
 
+const SIGLAS = {
+  'Vestido': 'VES',
+  'Blusa': 'BLU',
+  'Calça': 'CAL',
+  'Saia': 'SAI',
+  'Conjunto': 'CNJ',
+  'Acessório': 'ACS',
+  'Body': 'BOD',
+  'Boddy': 'BOD',
+  'Cropped': 'CRP',
+  'Calça de Alfaiataria': 'CAF',
+  'Short de Alfaiataria': 'SAF',
+  'Camisa de Alfaiataria': 'CMF',
+  'Vestido de Alfaiataria': 'VAF',
+  'Calça Jeans': 'JNS',
+  'Short Jeans': 'SJN',
+  'Short Jeans Cargo': 'SJC',
+  'Calça Jeans Cargo': 'CJC',
+  'Calça Flare': 'FLR',
+  'Outro': 'OUT',
+};
+
+async function gerarProximoCodigo(categoria) {
+  const sigla = SIGLAS[categoria] || 'OUT';
+
+  const existentes = await prisma.produto.findMany({
+    where: { codigo: { startsWith: `${sigla}-` } },
+    select: { codigo: true },
+  });
+
+  let maxNum = 0;
+  for (const p of existentes) {
+    if (!p.codigo) continue;
+    const match = p.codigo.match(/^[A-Z]+-(\d+)$/);
+    if (match) {
+      const n = parseInt(match[1], 10);
+      if (n > maxNum) maxNum = n;
+    }
+  }
+
+  return `${sigla}-${String(maxNum + 1).padStart(3, '0')}`;
+}
+
 // Lista produtos com filtros opcionais
 async function listarProdutos(req, res, next) {
   try {
@@ -16,7 +59,13 @@ async function listarProdutos(req, res, next) {
     if (categoria) where.categoria = sanitizarString(categoria);
     if (tamanho) where.tamanho = sanitizarString(tamanho);
     if (cor) where.cor = { contains: sanitizarString(cor), mode: 'insensitive' };
-    if (busca) where.nome = { contains: sanitizarString(busca), mode: 'insensitive' };
+    if (busca) {
+      const buscaSanitizada = sanitizarString(busca);
+      where.OR = [
+        { nome: { contains: buscaSanitizada, mode: 'insensitive' } },
+        { codigo: { contains: buscaSanitizada, mode: 'insensitive' } },
+      ];
+    }
 
     let orderBy = { nome: 'asc' };
     if (ordenar === 'preco_asc') orderBy = { precoVenda: 'asc' };
@@ -50,6 +99,25 @@ async function buscarProduto(req, res, next) {
   }
 }
 
+// Busca produto por código (para scanner)
+async function buscarPorCodigo(req, res, next) {
+  const erros = validationResult(req);
+  if (!erros.isEmpty()) {
+    return res.status(400).json({ erros: erros.array().map((e) => e.msg) });
+  }
+
+  try {
+    const codigo = sanitizarString(req.params.codigo).toUpperCase();
+    const produto = await prisma.produto.findFirst({
+      where: { codigo, ativo: true },
+    });
+    if (!produto) return res.status(404).json({ erro: 'Código não encontrado' });
+    res.json(produto);
+  } catch (err) {
+    next(err);
+  }
+}
+
 // Cria novo produto
 async function criarProduto(req, res, next) {
   const erros = validationResult(req);
@@ -69,10 +137,13 @@ async function criarProduto(req, res, next) {
       fotoPublicId = resultado.publicId;
     }
 
+    const categoriaSanitizada = sanitizarString(categoria);
+    const codigo = await gerarProximoCodigo(categoriaSanitizada);
+
     const produto = await prisma.produto.create({
       data: {
         nome: sanitizarString(nome),
-        categoria: sanitizarString(categoria),
+        categoria: categoriaSanitizada,
         tamanho: sanitizarString(tamanho),
         cor: sanitizarString(cor),
         quantidade: parseInt(quantidade),
@@ -80,12 +151,16 @@ async function criarProduto(req, res, next) {
         precoVenda: parseFloat(precoVenda),
         fotoUrl,
         fotoPublicId,
+        codigo,
       },
     });
 
-    logger.info({ produtoId: produto.id }, 'Produto cadastrado');
+    logger.info({ produtoId: produto.id, codigo }, 'Produto cadastrado');
     res.status(201).json(produto);
   } catch (err) {
+    if (err.code === 'P2002' && err.meta?.target?.includes('codigo')) {
+      return res.status(409).json({ erro: 'Conflito ao gerar código. Tente novamente.' });
+    }
     next(err);
   }
 }
@@ -141,7 +216,7 @@ async function deletarProduto(req, res, next) {
   }
 
   try {
-    const id = req.params.id;
+    const id = parseInt(req.params.id);
     const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
@@ -197,6 +272,7 @@ async function listaBaixoEstoque(req, res, next) {
 module.exports = {
   listarProdutos,
   buscarProduto,
+  buscarPorCodigo,
   criarProduto,
   atualizarProduto,
   deletarProduto,

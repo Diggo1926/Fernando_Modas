@@ -9,25 +9,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Categorias possíveis de produto
-// Vestido | Blusa | Calça | Saia | Conjunto | Acessório | Body | Calça de Alfaiataria | Short de Alfaiataria | Camisa de Alfaiataria | Outro
-
-// Tamanhos possíveis
-// PP | P | M | G | GG | Único
-
 model Produto {
-  id          String   @id @default(uuid())
-  nome        String
-  categoria   String
-  tamanho     String
-  cor         String
-  quantidade  Int      @default(0)
-  precoCompra Decimal  @db.Decimal(10, 2)
-  precoVenda  Decimal  @db.Decimal(10, 2)
-  fotoUrl     String?
-  ativo       Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  nome         String
+  categoria    String
+  tamanho      String
+  cor          String
+  quantidade   Int      @default(0)
+  precoCusto   Decimal  @db.Decimal(10, 2)
+  precoVenda   Decimal  @db.Decimal(10, 2)
+  codigo       String?  @unique
+  fotoUrl      String?
+  fotoPublicId String?
+  ativo        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   vendas   Venda[]
   entradas EntradaEstoque[]
@@ -36,16 +32,16 @@ model Produto {
 }
 
 model Venda {
-  id             String   @id @default(uuid())
-  produtoId      String
-  quantidade     Int
-  valorTotal     Decimal  @db.Decimal(10, 2)
+  id              Int      @id @default(autoincrement())
+  produtoId       Int
+  quantidade      Int
+  valorTotal      Decimal  @db.Decimal(10, 2)
   // JSON: [{ forma: "PIX" | "Dinheiro" | "Débito" | "Crédito", valor: number }]
   formasPagamento String
-  parcelas       Int?
-  cancelada      Boolean  @default(false)
-  dataHora       DateTime @default(now())
-  caixaId        String?
+  parcelas        Int?
+  cancelada       Boolean  @default(false)
+  dataHora        DateTime @default(now())
+  caixaId         Int?
 
   produto Produto          @relation(fields: [produtoId], references: [id])
   caixa   FechamentoCaixa? @relation(fields: [caixaId], references: [id])
@@ -54,15 +50,15 @@ model Venda {
 }
 
 model FechamentoCaixa {
-  id             String   @id @default(uuid())
-  data           DateTime
-  totalGeral     Decimal  @db.Decimal(10, 2)
-  totalPix       Decimal  @db.Decimal(10, 2)
-  totalDinheiro  Decimal  @db.Decimal(10, 2)
-  totalDebito    Decimal  @db.Decimal(10, 2)
-  totalCredito   Decimal  @db.Decimal(10, 2)
-  totalPecas     Int
-  createdAt      DateTime @default(now())
+  id            Int      @id @default(autoincrement())
+  data          DateTime
+  totalGeral    Decimal  @db.Decimal(10, 2)
+  totalPix      Decimal  @db.Decimal(10, 2)
+  totalDinheiro Decimal  @db.Decimal(10, 2)
+  totalDebito   Decimal  @db.Decimal(10, 2)
+  totalCredito  Decimal  @db.Decimal(10, 2)
+  totalPecas    Int
+  createdAt     DateTime @default(now())
 
   vendas Venda[]
 
@@ -70,8 +66,8 @@ model FechamentoCaixa {
 }
 
 model EntradaEstoque {
-  id         String   @id @default(uuid())
-  produtoId  String
+  id         Int      @id @default(autoincrement())
+  produtoId  Int
   quantidade Int
   data       DateTime @default(now())
 
