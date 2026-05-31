@@ -4,6 +4,7 @@ import { useWindowSize } from '../hooks/useWindowSize';
 import CardProduto from '../components/estoque/CardProduto';
 import ModalProduto from '../components/estoque/ModalProduto';
 import ModalReposicao from '../components/estoque/ModalReposicao';
+import ModalEtiquetas from '../components/estoque/ModalEtiquetas';
 import ListaReposicao from '../components/estoque/ListaReposicao';
 
 const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Short Jeans Cargo', 'Calça Jeans Cargo', 'Calça Flare', 'Outro'];
@@ -17,6 +18,7 @@ export default function EstoquePage() {
   const [filtros, setFiltros] = useState({ busca: '', categoria: '', tamanho: '', ordenar: '' });
   const [modalProduto, setModalProduto] = useState(null); // null | 'novo' | produto
   const [modalReposicao, setModalReposicao] = useState(null);
+  const [modalEtiquetas, setModalEtiquetas] = useState(null);
   const [modalLista, setModalLista] = useState(false);
 
   useEffect(() => {
@@ -47,11 +49,11 @@ export default function EstoquePage() {
           alignItems: 'center',
         }}
       >
-        {/* Busca */}
+        {/* Busca — aceita nome ou código (ex: VES-001) */}
         <input
           className="input-padrao"
           style={{ flex: 1, minWidth: 200 }}
-          placeholder="Buscar produto..."
+          placeholder="Buscar por nome ou código (ex: VES-001)..."
           value={filtros.busca}
           onChange={(e) => setFiltros((f) => ({ ...f, busca: e.target.value }))}
         />
@@ -143,6 +145,7 @@ export default function EstoquePage() {
               onEditar={setModalProduto}
               onRepor={setModalReposicao}
               onDeletar={confirmarDeletar}
+              onEtiquetas={setModalEtiquetas}
             />
           ))}
         </div>
@@ -164,6 +167,13 @@ export default function EstoquePage() {
           onFechar={() => setModalReposicao(null)}
           onRepor={reporEstoque}
           carregando={carregando}
+        />
+      )}
+
+      {modalEtiquetas && (
+        <ModalEtiquetas
+          produto={modalEtiquetas}
+          onFechar={() => setModalEtiquetas(null)}
         />
       )}
 

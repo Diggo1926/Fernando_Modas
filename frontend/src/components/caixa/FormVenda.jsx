@@ -5,7 +5,6 @@ import toast from 'react-hot-toast';
 
 const TAMANHOS = ['P', 'M', 'G', 'GG', 'GGG', 'U', '36', '38', '40', '42', '44', '46'];
 
-// Formas: label exibido → chave da API
 const FORMAS = [
   { api: 'DINHEIRO', label: 'Dinheiro' },
   { api: 'PIX',      label: 'PIX'      },
@@ -20,15 +19,31 @@ const estadoInicial = {
   tamanho: '',
   quantidade: '1',
   valorTotal: '',
-  formasSelecionadas: [],   // chaves API: 'DINHEIRO', 'PIX', etc.
+  formasSelecionadas: [],
   valoresPorForma: {},
   valorRecebido: '',
   parcelas: '1',
 };
 
-export default function FormVenda({ onVendaRegistrada, carregando }) {
+export default function FormVenda({ onVendaRegistrada, carregando, produtoInjetado, onProdutoInjetadoUsado }) {
   const [form, setForm] = useState(estadoInicial);
 
+  // Produto injetado pelo scanner
+  useEffect(() => {
+    if (!produtoInjetado) return;
+    const qtd = Math.max(1, parseInt(form.quantidade) || 1);
+    setForm((f) => ({
+      ...f,
+      busca: produtoInjetado.nome,
+      produtoSelecionado: produtoInjetado,
+      sugestoes: [],
+      tamanho: produtoInjetado.tamanho,
+      valorTotal: String((qtd * Number(produtoInjetado.precoVenda)).toFixed(2)),
+    }));
+    if (onProdutoInjetadoUsado) onProdutoInjetadoUsado();
+  }, [produtoInjetado]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sugestões de busca por nome
   useEffect(() => {
     if (form.busca.length < 2) { setForm((f) => ({ ...f, sugestoes: [] })); return; }
     const timer = setTimeout(async () => {
@@ -111,6 +126,29 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
         Registrar Venda
       </h3>
 
+      {/* Produto selecionado via scanner — destaque visual */}
+      {form.produtoSelecionado && form.produtoSelecionado.codigo && (
+        <div
+          style={{
+            padding: '8px 12px',
+            background: 'rgba(184,146,74,0.07)',
+            border: '1px solid rgba(184,146,74,0.25)',
+            borderRadius: 6,
+            marginBottom: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <span style={{ fontFamily: 'monospace', fontSize: 11, fontWeight: 700, color: 'var(--ouro)' }}>
+            {form.produtoSelecionado.codigo}
+          </span>
+          <span style={{ fontSize: 12, color: 'var(--texto)', flex: 1 }}>
+            {form.produtoSelecionado.nome}
+          </span>
+        </div>
+      )}
+
       {/* Busca de produto */}
       <div style={{ position: 'relative', marginBottom: 14 }}>
         <label className="label-padrao">PRODUTO</label>
@@ -131,7 +169,10 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
               >
                 <div>
                   <div style={{ fontWeight: 500 }}>{p.nome}</div>
-                  <div style={{ fontSize: 11, color: 'var(--texto-leve)' }}>{p.tamanho} · {p.cor}</div>
+                  <div style={{ fontSize: 11, color: 'var(--texto-leve)' }}>
+                    {p.codigo && <span style={{ fontFamily: 'monospace', color: 'var(--ouro)', marginRight: 6 }}>{p.codigo}</span>}
+                    {p.tamanho} · {p.cor}
+                  </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, color: 'var(--ouro)' }}>{formatarMoeda(p.precoVenda)}</div>
@@ -250,6 +291,16 @@ export default function FormVenda({ onVendaRegistrada, carregando }) {
               <option key={n} value={n}>{n}x {n > 1 ? `de ${formatarMoeda(Number(form.valorTotal) / n)}` : ''}</option>
             ))}
           </select>
+        </div>
+      )}
+
+      {/* Total destacado */}
+      {form.valorTotal && (
+        <div style={{ marginBottom: 14, padding: '12px 16px', background: 'var(--bg)', borderRadius: 8, textAlign: 'center' }}>
+          <div className="label-padrao" style={{ marginBottom: 4, textAlign: 'center' }}>TOTAL DA VENDA</div>
+          <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 28, fontStyle: 'italic', color: 'var(--ouro)', fontWeight: 400 }}>
+            {formatarMoeda(Number(form.valorTotal))}
+          </div>
         </div>
       )}
 

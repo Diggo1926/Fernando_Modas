@@ -5,6 +5,7 @@ import MetricasCards from '../components/caixa/MetricasCards';
 import UltimasVendas from '../components/caixa/UltimasVendas';
 import FormVenda from '../components/caixa/FormVenda';
 import BarraCaixa from '../components/caixa/BarraCaixa';
+import BuscaScanner from '../components/caixa/BuscaScanner';
 
 export default function CaixaPage() {
   const { vendas, metricas, carregando, buscarVendas, buscarMetricas, registrarVenda, cancelarVenda, fecharCaixa } = useVendas();
@@ -14,6 +15,7 @@ export default function CaixaPage() {
   const isDesktop = width >= 1024;
 
   const [drawerAberto, setDrawerAberto] = useState(false);
+  const [produtoScanner, setProdutoScanner] = useState(null);
 
   useEffect(() => {
     buscarVendas();
@@ -26,13 +28,28 @@ export default function CaixaPage() {
     return ok;
   }
 
-  const formVenda = <FormVenda onVendaRegistrada={handleVenda} carregando={carregando} />;
+  function handleProdutoScanner(produto) {
+    setProdutoScanner(produto);
+    if (!isDesktop) setDrawerAberto(true);
+  }
+
+  const formVenda = (
+    <FormVenda
+      onVendaRegistrada={handleVenda}
+      carregando={carregando}
+      produtoInjetado={produtoScanner}
+      onProdutoInjetadoUsado={() => setProdutoScanner(null)}
+    />
+  );
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '16px' : '24px' }}>
 
-        {/* Cards de métricas — responsivos */}
+        {/* Scanner — sempre visível no topo */}
+        <BuscaScanner onProdutoEncontrado={handleProdutoScanner} />
+
+        {/* Cards de métricas */}
         <MetricasCards metricas={metricas} isMobile={isMobile} isTablet={isTablet} />
 
         {/* Botão Nova Venda (mobile e tablet) */}
@@ -48,7 +65,7 @@ export default function CaixaPage() {
 
         {/* Layout principal */}
         {isDesktop ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 420px', gap: 20 }}>
             <UltimasVendas vendas={vendas} onCancelar={cancelarVenda} carregando={carregando} />
             <div>{formVenda}</div>
           </div>
@@ -56,7 +73,7 @@ export default function CaixaPage() {
           <UltimasVendas vendas={vendas} onCancelar={cancelarVenda} carregando={carregando} />
         )}
 
-        {/* Totais do dia como card — apenas no mobile, dentro do scroll */}
+        {/* Totais do dia — apenas no mobile, dentro do scroll */}
         {isMobile && (
           <div style={{ marginTop: 20 }}>
             <BarraCaixa vendas={vendas} onFecharCaixa={fecharCaixa} carregando={carregando} isMobile />
