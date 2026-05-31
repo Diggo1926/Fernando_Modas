@@ -154,7 +154,7 @@ async function metricasDia(req, res, next) {
     const ticketMedio = vendas.length > 0 ? totalFaturamento / vendas.length : 0;
 
     const produtosBaixoEstoque = await prisma.produto.count({
-      where: { ativo: true, quantidade: { lte: 3 } },
+      where: { ativo: true, quantidade: { lte: 1 } },
     });
 
     res.json({ faturamentoTotal: totalFaturamento, totalPecas, ticketMedio, produtosBaixoEstoque });
