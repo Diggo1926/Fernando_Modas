@@ -16,6 +16,7 @@ model Produto {
   quantidade   Int              @default(0)
   precoCusto   Float
   precoVenda   Float
+  codigo       String?          @unique
   fotoUrl      String?
   fotoPublicId String?
   ativo        Boolean          @default(true)
