@@ -176,7 +176,7 @@ export default function FormVenda({ onVendaRegistrada, carregando, produtoInjeta
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, color: 'var(--ouro)' }}>{formatarMoeda(p.precoVenda)}</div>
-                  <div style={{ fontSize: 11, color: p.quantidade <= 3 ? 'var(--vermelho)' : 'var(--verde)' }}>
+                  <div style={{ fontSize: 11, color: p.quantidade === 0 ? 'var(--vermelho)' : 'var(--verde)' }}>
                     {p.quantidade} em estoque
                   </div>
                 </div>

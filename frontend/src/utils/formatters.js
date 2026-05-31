@@ -54,7 +54,6 @@ export function classeTagPagamento(forma) {
 }
 
 export function corQuantidade(qtd) {
-  if (qtd <= 1) return 'var(--vermelho)';
-  if (qtd <= 3) return '#D4A017';
+  if (qtd === 0) return 'var(--vermelho)';
   return 'var(--verde)';
 }

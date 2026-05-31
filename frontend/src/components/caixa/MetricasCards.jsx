@@ -40,7 +40,7 @@ export default function MetricasCards({ metricas, isMobile, isTablet }) {
           {baixoEstoque}
         </div>
         <div style={{ marginTop: 6, fontSize: 12, color: 'var(--texto-md)' }}>
-          {baixoEstoque > 0 ? 'produtos com ≤ 3 unidades' : 'estoque normalizado'}
+          {baixoEstoque > 0 ? 'produtos sem estoque' : 'estoque normalizado'}
         </div>
       </div>
     </div>
