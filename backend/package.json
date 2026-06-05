@@ -1,7 +1,7 @@
 {
-  "name": "a-bella-modas-backend",
+  "name": "diva-modas-backend",
   "version": "1.0.0",
-  "description": "Backend do sistema de gestão A Bella Modas",
+  "description": "Backend do sistema de gestão Diva Modas",
   "main": "src/server.js",
   "scripts": {
     "build": "prisma generate",

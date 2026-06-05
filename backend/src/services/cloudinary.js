@@ -23,7 +23,7 @@ function aguardar(ms) {
  * Retorna { url, publicId } para armazenar ambos no banco.
  */
 async function enviarImagem(buffer, mimeType) {
-  const publicId = `a-bella-modas/${uuidv4()}`;
+  const publicId = `diva-modas/${uuidv4()}`;
 
   for (let tentativa = 1; tentativa <= TENTATIVAS_MAXIMAS; tentativa++) {
     try {

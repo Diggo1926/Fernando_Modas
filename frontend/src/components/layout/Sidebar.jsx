@@ -75,7 +75,7 @@ export default function Sidebar({ collapsed }) {
                 lineHeight: 1.1,
               }}
             >
-              A Bella
+              Diva
             </div>
             <div
               style={{
@@ -144,8 +144,8 @@ export default function Sidebar({ collapsed }) {
 function Logo({ tamanho }) {
   return (
     <img
-      src="/logo-abella.jpeg"
-      alt="A Bella Modas"
+      src="/logo-diva-modas.png"
+      alt="Diva Modas"
       style={{
         width: tamanho,
         height: tamanho,

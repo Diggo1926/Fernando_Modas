@@ -1,7 +1,7 @@
 {
-  "name": "A Bella Modas",
-  "short_name": "A Bella",
-  "description": "Sistema de gestão da loja A Bella Modas",
+  "name": "Diva Modas",
+  "short_name": "Diva Modas",
+  "description": "Sistema de gestão da Diva Modas",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#111111",
@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
