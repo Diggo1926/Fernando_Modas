@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useEstoque } from '../hooks/useEstoque';
+import { useCategorias } from '../hooks/useCategorias';
 import { useWindowSize } from '../hooks/useWindowSize';
 import CardProduto from '../components/estoque/CardProduto';
 import ModalProduto from '../components/estoque/ModalProduto';
 import ModalReposicao from '../components/estoque/ModalReposicao';
 import ModalEtiquetas from '../components/estoque/ModalEtiquetas';
 import ListaReposicao from '../components/estoque/ListaReposicao';
+import ModalCategorias from '../components/estoque/ModalCategorias';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Short Jeans Cargo', 'Calça Jeans Cargo', 'Calça Flare', 'Outro'];
 const TAMANHOS = ['P', 'M', 'G', 'GG', 'GGG', 'U', '36', '38', '40', '42', '44', '46'];
 
 export default function EstoquePage() {
   const { produtos, baixoEstoque, carregando, buscarProdutos, buscarBaixoEstoque, criarProduto, atualizarProduto, deletarProduto, reporEstoque } = useEstoque();
+  const { categorias, carregando: carregandoCats, buscarCategorias, criarCategoria } = useCategorias();
   const { width } = useWindowSize();
   const isMobile = width < 768;
 
@@ -20,11 +22,14 @@ export default function EstoquePage() {
   const [modalReposicao, setModalReposicao] = useState(null);
   const [modalEtiquetas, setModalEtiquetas] = useState(null);
   const [modalLista, setModalLista] = useState(false);
+  const [modalCategorias, setModalCategorias] = useState(false);
 
   useEffect(() => {
     buscarProdutos(filtros);
     buscarBaixoEstoque();
   }, [filtros]);
+
+  useEffect(() => { buscarCategorias(); }, []);
 
   async function salvarProduto(fd) {
     if (modalProduto === 'novo') return await criarProduto(fd);
@@ -66,8 +71,17 @@ export default function EstoquePage() {
           onChange={(e) => setFiltros((f) => ({ ...f, categoria: e.target.value }))}
         >
           <option value="">Categoria</option>
-          {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
+          {categorias.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
         </select>
+
+        {/* Gerenciar categorias */}
+        <button
+          className="btn-secundario"
+          style={{ padding: '10px 14px', fontSize: 12, whiteSpace: 'nowrap' }}
+          onClick={() => setModalCategorias(true)}
+        >
+          + Categorias
+        </button>
 
         {/* Ordenar */}
         <select
@@ -181,6 +195,15 @@ export default function EstoquePage() {
         <ListaReposicao
           produtos={baixoEstoque}
           onFechar={() => setModalLista(false)}
+        />
+      )}
+
+      {modalCategorias && (
+        <ModalCategorias
+          categorias={categorias}
+          carregando={carregandoCats}
+          onCriar={criarCategoria}
+          onFechar={() => setModalCategorias(false)}
         />
       )}
     </div>

@@ -7,30 +7,9 @@ const logger = require('../utils/logger');
 
 const prisma = new PrismaClient();
 
-const SIGLAS = {
-  'Vestido': 'VES',
-  'Blusa': 'BLU',
-  'Calça': 'CAL',
-  'Saia': 'SAI',
-  'Conjunto': 'CNJ',
-  'Acessório': 'ACS',
-  'Body': 'BOD',
-  'Boddy': 'BOD',
-  'Cropped': 'CRP',
-  'Calça de Alfaiataria': 'CAF',
-  'Short de Alfaiataria': 'SAF',
-  'Camisa de Alfaiataria': 'CMF',
-  'Vestido de Alfaiataria': 'VAF',
-  'Calça Jeans': 'JNS',
-  'Short Jeans': 'SJN',
-  'Short Jeans Cargo': 'SJC',
-  'Calça Jeans Cargo': 'CJC',
-  'Calça Flare': 'FLR',
-  'Outro': 'OUT',
-};
-
 async function gerarProximoCodigo(categoria) {
-  const sigla = SIGLAS[categoria] || 'OUT';
+  const cat = await prisma.categoria.findFirst({ where: { nome: categoria, ativo: true } });
+  const sigla = cat?.sigla || 'OUT';
 
   const existentes = await prisma.produto.findMany({
     where: { codigo: { startsWith: `${sigla}-` } },
@@ -128,6 +107,12 @@ async function criarProduto(req, res, next) {
   try {
     const { nome, categoria, tamanho, cor, quantidade, precoCusto, precoVenda } = req.body;
 
+    const categoriaSanitizada = sanitizarString(categoria);
+    const categoriaValida = await prisma.categoria.findFirst({ where: { nome: categoriaSanitizada, ativo: true } });
+    if (!categoriaValida) {
+      return res.status(400).json({ erros: ['Categoria inválida'] });
+    }
+
     let fotoUrl = null;
     let fotoPublicId = null;
 
@@ -137,7 +122,6 @@ async function criarProduto(req, res, next) {
       fotoPublicId = resultado.publicId;
     }
 
-    const categoriaSanitizada = sanitizarString(categoria);
     const codigo = await gerarProximoCodigo(categoriaSanitizada);
 
     const produto = await prisma.produto.create({
@@ -177,9 +161,15 @@ async function atualizarProduto(req, res, next) {
     const produto = await prisma.produto.findFirst({ where: { id, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado' });
 
+    const categoriaSanitizada = sanitizarString(req.body.categoria);
+    const categoriaValida = await prisma.categoria.findFirst({ where: { nome: categoriaSanitizada, ativo: true } });
+    if (!categoriaValida) {
+      return res.status(400).json({ erro: 'Categoria inválida' });
+    }
+
     const dadosAtualizar = {
       nome:       sanitizarString(req.body.nome),
-      categoria:  sanitizarString(req.body.categoria),
+      categoria:  categoriaSanitizada,
       tamanho:    sanitizarString(req.body.tamanho),
       cor:        sanitizarString(req.body.cor),
       quantidade: parseInt(req.body.quantidade),

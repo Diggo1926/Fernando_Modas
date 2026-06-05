@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Categoria {
+  id              Int     @id @default(autoincrement())
+  nome            String  @unique
+  sigla           String  @unique
+  temTamanhoUnico Boolean @default(false)
+  ativo           Boolean @default(true)
+
+  @@map("categorias")
+}
+
 model Produto {
   id           Int              @id @default(autoincrement())
   nome         String

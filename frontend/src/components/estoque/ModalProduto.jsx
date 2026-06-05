@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { calcularMargem } from '../../utils/formatters';
+import { useCategorias } from '../../hooks/useCategorias';
 
-const CATEGORIAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Short Jeans Cargo', 'Calça Jeans Cargo', 'Calça Flare', 'Outro'];
 const TAMANHOS_LETRAS  = ['P', 'M', 'G', 'GG', 'GGG'];
 const TAMANHOS_NUMEROS = ['36', '38', '40', '42', '44', '46'];
-const CATEGORIAS_UNICO = ['Boddy', 'Cropped', 'Vestido', 'Blusa'];
 
 function tipoDoTamanho(t) {
   if (TAMANHOS_NUMEROS.includes(t)) return 'numeros';
@@ -13,12 +12,15 @@ function tipoDoTamanho(t) {
 const LIMITE_FOTO = 5 * 1024 * 1024;
 
 export default function ModalProduto({ produto, onFechar, onSalvar, carregando }) {
+  const { categorias, buscarCategorias } = useCategorias();
   const [form, setForm] = useState({
     nome: '', categoria: '', tamanho: '', cor: '',
     quantidade: '0', precoCusto: '', precoVenda: '',
     foto: null, fotoPreview: null,
   });
   const [tipoTamanho, setTipoTamanho] = useState('letras');
+
+  useEffect(() => { buscarCategorias(); }, []);
 
   useEffect(() => {
     if (produto) {
@@ -109,7 +111,7 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
               <select className="input-padrao" required value={form.categoria}
                 onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))}>
                 <option value="">Selecione...</option>
-                {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
+                {categorias.map((c) => <option key={c.id} value={c.nome}>{c.nome}</option>)}
               </select>
             </div>
             <div>
@@ -149,7 +151,7 @@ export default function ModalProduto({ produto, onFechar, onSalvar, carregando }
                   {t}
                 </button>
               ))}
-              {tipoTamanho === 'letras' && CATEGORIAS_UNICO.includes(form.categoria) && (
+              {tipoTamanho === 'letras' && categorias.find((c) => c.nome === form.categoria)?.temTamanhoUnico && (
                 <button key="U" type="button"
                   className={`toggle-btn${form.tamanho === 'U' ? ' ativo' : ''}`}
                   onClick={() => setForm((f) => ({ ...f, tamanho: 'U' }))}>

@@ -15,12 +15,11 @@ const {
   listaBaixoEstoque,
 } = require('../controllers/estoqueController');
 
-const CATEGORIAS_VALIDAS = ['Vestido', 'Blusa', 'Calça', 'Calça Jeans', 'Short Jeans', 'Saia', 'Conjunto', 'Acessório', 'Body', 'Boddy', 'Cropped', 'Calça de Alfaiataria', 'Short de Alfaiataria', 'Camisa de Alfaiataria', 'Vestido de Alfaiataria', 'Short Jeans Cargo', 'Calça Jeans Cargo', 'Calça Flare', 'Outro'];
 const TAMANHOS_VALIDOS = ['PP', 'P', 'M', 'G', 'GG', 'GGG', 'U', 'Único', '36', '38', '40', '42', '44', '46'];
 
 const validacoesProduto = [
   body('nome').trim().isLength({ min: 2, max: 100 }).withMessage('Nome deve ter entre 2 e 100 caracteres'),
-  body('categoria').isIn(CATEGORIAS_VALIDAS).withMessage('Categoria inválida'),
+  body('categoria').trim().isLength({ min: 2, max: 60 }).withMessage('Categoria inválida'),
   body('tamanho').isIn(TAMANHOS_VALIDOS).withMessage('Tamanho inválido'),
   body('cor').trim().isLength({ min: 2, max: 50 }).withMessage('Cor deve ter entre 2 e 50 caracteres'),
   body('quantidade').isInt({ min: 0 }).withMessage('Quantidade deve ser um número inteiro positivo').toInt(),

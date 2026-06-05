@@ -8,6 +8,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const rotasCaixa = require('./routes/caixa');
 const rotasEstoque = require('./routes/estoque');
 const rotasRelatorio = require('./routes/relatorio');
+const rotasCategorias = require('./routes/categorias');
 
 const app = express();
 
@@ -68,6 +69,7 @@ app.use('/api', autenticarApiKey);
 app.use('/api/caixa', rotasCaixa);
 app.use('/api/estoque', rotasEstoque);
 app.use('/api/relatorio', rotasRelatorio);
+app.use('/api/categorias', rotasCategorias);
 
 // Rota 404
 app.use((_req, res) => res.status(404).json({ erro: 'Rota não encontrada' }));
