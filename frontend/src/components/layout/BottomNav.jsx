@@ -22,9 +22,9 @@ const IcoRelatorio = () => (
 );
 
 const itens = [
-  { to: '/caixa',    label: 'Caixa',     Ico: IcoCaixa },
-  { to: '/estoque',  label: 'Estoque',   Ico: IcoEstoque },
-  { to: '/relatorio',label: 'Relatório', Ico: IcoRelatorio },
+  { to: '/caixa',     label: 'Caixa',     Ico: IcoCaixa     },
+  { to: '/estoque',   label: 'Estoque',   Ico: IcoEstoque   },
+  { to: '/relatorio', label: 'Relatório', Ico: IcoRelatorio },
 ];
 
 export default function BottomNav() {
@@ -35,12 +35,11 @@ export default function BottomNav() {
         bottom: 0,
         left: 0,
         right: 0,
-        background: 'var(--branco)',
-        borderTop: '1px solid var(--borda)',
+        background: '#111111',
+        borderTop: '1px solid rgba(184, 146, 74, 0.2)',
         display: 'flex',
         justifyContent: 'space-around',
         paddingTop: 8,
-        /* Respeita o notch/home indicator do iPhone */
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 6px)',
         zIndex: 40,
       }}
@@ -55,12 +54,13 @@ export default function BottomNav() {
             alignItems: 'center',
             gap: 3,
             textDecoration: 'none',
-            color: isActive ? 'var(--ouro)' : 'var(--texto-leve)',
+            color: isActive ? '#B8924A' : '#888888',
             fontFamily: 'Montserrat, sans-serif',
             fontSize: 10,
             fontWeight: isActive ? 500 : 300,
             minWidth: 64,
             padding: '4px 0',
+            transition: 'color 0.15s ease',
           })}
         >
           <Ico />

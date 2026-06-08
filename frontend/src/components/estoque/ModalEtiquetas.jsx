@@ -7,6 +7,13 @@ export default function ModalEtiquetas({ produto, onFechar }) {
   const canvasRef = useRef(null);
   const [copiado, setCopiado] = useState(false);
 
+  const precoVista = Number(produto.precoVenda);
+  // precoCartao usa campo do produto se disponível, senão calcula 10% de markup
+  const precoCartao =
+    produto.precoCartao != null
+      ? Number(produto.precoCartao)
+      : Number((precoVista * 1.1).toFixed(2));
+
   useEffect(() => {
     if (!canvasRef.current || !produto.codigo) return;
     JsBarcode(canvasRef.current, produto.codigo, {
@@ -26,35 +33,68 @@ export default function ModalEtiquetas({ produto, onFechar }) {
     if (!canvasRef.current) return;
 
     const barcodeDataUrl = canvasRef.current.toDataURL('image/png');
+    const nome =
+      produto.nome.length > 26
+        ? produto.nome.substring(0, 26) + '.'
+        : produto.nome;
 
-    const pdf = new jsPDF({ unit: 'mm', format: [58, 45], orientation: 'portrait' });
+    const pdf = new jsPDF({ unit: 'mm', format: [58, 50], orientation: 'portrait' });
 
     pdf.setFillColor(255, 255, 255);
-    pdf.rect(0, 0, 58, 45, 'F');
+    pdf.rect(0, 0, 58, 50, 'F');
 
-    // Código de barras
-    pdf.addImage(barcodeDataUrl, 'PNG', 4, 2, 50, 17);
+    // Código de barras (imagem inclui texto do displayValue)
+    pdf.addImage(barcodeDataUrl, 'PNG', 4, 2, 50, 18);
 
-    // Código legível
+    // Código legível abaixo do barcode
     pdf.setFont('courier', 'normal');
     pdf.setFontSize(7);
-    pdf.text(produto.codigo, 29, 21, { align: 'center' });
+    pdf.setTextColor(50, 50, 50);
+    pdf.text(produto.codigo, 29, 23, { align: 'center' });
 
     // Nome do produto
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(7.5);
-    const nome = produto.nome.length > 26 ? produto.nome.substring(0, 26) + '.' : produto.nome;
-    pdf.text(nome.toUpperCase(), 29, 27, { align: 'center' });
+    pdf.setTextColor(30, 30, 30);
+    pdf.text(nome.toUpperCase(), 29, 28, { align: 'center' });
 
-    // Preço
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(11);
-    pdf.text(formatarMoeda(Number(produto.precoVenda)), 29, 34, { align: 'center' });
+    // Linha divisória sutil
+    pdf.setDrawColor(210, 210, 210);
+    pdf.line(6, 30.5, 52, 30.5);
+
+    // À VISTA — label
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(5.5);
+    pdf.setTextColor(140, 140, 140);
+    pdf.text('À VISTA', 14.5, 34.5, { align: 'center' });
+
+    // À VISTA — preço
+    pdf.setFont('helvetica', 'bolditalic');
+    pdf.setFontSize(9);
+    pdf.setTextColor(184, 146, 74);
+    pdf.text(formatarMoeda(precoVista), 14.5, 40, { align: 'center' });
+
+    // Separador vertical entre os dois preços
+    pdf.setDrawColor(210, 210, 210);
+    pdf.line(29, 31, 29, 42);
+
+    // CARTÃO — label
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(5.5);
+    pdf.setTextColor(140, 140, 140);
+    pdf.text('CARTÃO', 43.5, 34.5, { align: 'center' });
+
+    // CARTÃO — preço
+    pdf.setFont('helvetica', 'bolditalic');
+    pdf.setFontSize(9);
+    pdf.setTextColor(184, 146, 74);
+    pdf.text(formatarMoeda(precoCartao), 43.5, 40, { align: 'center' });
 
     // Tamanho
-    pdf.setFont('helvetica', 'normal');
+    pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(9);
-    pdf.text(`TAM ${produto.tamanho}`, 29, 41, { align: 'center' });
+    pdf.setTextColor(50, 50, 50);
+    pdf.text(`TAM ${produto.tamanho || 'UN'}`, 29, 47, { align: 'center' });
 
     pdf.save(`etiqueta-${produto.codigo}.pdf`);
   }
@@ -97,8 +137,10 @@ export default function ModalEtiquetas({ produto, onFechar }) {
             textAlign: 'center',
           }}
         >
+          {/* Código de barras */}
           <canvas ref={canvasRef} style={{ width: '100%', display: 'block' }} />
 
+          {/* Código em ouro + botão copiar */}
           <div
             style={{
               display: 'flex',
@@ -114,7 +156,15 @@ export default function ModalEtiquetas({ produto, onFechar }) {
             <button
               onClick={copiarCodigo}
               title="Copiar código"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: copiado ? 'var(--verde)' : 'var(--texto-leve)', fontSize: 12, fontFamily: 'Montserrat, sans-serif' }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 2,
+                color: copiado ? 'var(--verde)' : 'var(--texto-leve)',
+                fontSize: 12,
+                fontFamily: 'Montserrat, sans-serif',
+              }}
             >
               {copiado ? 'Copiado!' : (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -125,14 +175,107 @@ export default function ModalEtiquetas({ produto, onFechar }) {
             </button>
           </div>
 
-          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--texto)', marginTop: 4, letterSpacing: '0.03em' }}>
-            {produto.nome.length > 26 ? produto.nome.substring(0, 26) + '.' : produto.nome.toUpperCase()}
+          {/* Nome do produto */}
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: 'var(--texto)',
+              marginTop: 4,
+              letterSpacing: '0.03em',
+            }}
+          >
+            {produto.nome.length > 26
+              ? produto.nome.substring(0, 26) + '.'
+              : produto.nome.toUpperCase()}
           </div>
-          <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 18, fontStyle: 'italic', color: 'var(--ouro)', marginTop: 4 }}>
-            {formatarMoeda(Number(produto.precoVenda))}
+
+          {/* Linha divisória sutil */}
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.08)', margin: '8px 0' }} />
+
+          {/* Dois preços lado a lado */}
+          <div style={{ display: 'flex', alignItems: 'stretch' }}>
+            {/* À vista */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {/* Ícone dinheiro (cédula) */}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2">
+                  <rect x="1" y="6" width="22" height="12" rx="2" />
+                  <circle cx="12" cy="12" r="2" />
+                </svg>
+                <span
+                  style={{
+                    fontSize: 9,
+                    color: '#999',
+                    letterSpacing: '0.05em',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 500,
+                  }}
+                >
+                  À VISTA
+                </span>
+              </div>
+              <span
+                style={{
+                  fontFamily: 'Cormorant Garamond, serif',
+                  fontSize: 16,
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--ouro)',
+                }}
+              >
+                {formatarMoeda(precoVista)}
+              </span>
+            </div>
+
+            {/* Divisor vertical */}
+            <div style={{ width: 1, background: 'rgba(0,0,0,0.08)', alignSelf: 'stretch' }} />
+
+            {/* Cartão */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                {/* Ícone cartão */}
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#999" strokeWidth="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" />
+                  <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+                <span
+                  style={{
+                    fontSize: 9,
+                    color: '#999',
+                    letterSpacing: '0.05em',
+                    fontFamily: 'Montserrat, sans-serif',
+                    fontWeight: 500,
+                  }}
+                >
+                  CARTÃO
+                </span>
+              </div>
+              <span
+                style={{
+                  fontFamily: 'Cormorant Garamond, serif',
+                  fontSize: 16,
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--ouro)',
+                }}
+              >
+                {formatarMoeda(precoCartao)}
+              </span>
+            </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--texto-md)', marginTop: 2 }}>
-            TAM {produto.tamanho}
+
+          {/* Tamanho */}
+          <div
+            style={{
+              fontSize: 12,
+              color: 'var(--texto-md)',
+              marginTop: 8,
+              fontWeight: 600,
+              letterSpacing: '0.05em',
+            }}
+          >
+            TAM {produto.tamanho || 'UN'}
           </div>
         </div>
 

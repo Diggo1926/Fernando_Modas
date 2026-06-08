@@ -28,19 +28,32 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando, isMobile
   return (
     <>
       {isMobile ? (
-        /* Card — mobile: dentro do scroll, abaixo de Últimas Vendas */
-        <div className="card" style={{ padding: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12 }}>
+        /* Card mobile */
+        <div
+          className="card"
+          style={{ padding: 18 }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
             <div className="label-padrao">TOTAL DO DIA</div>
-            <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontStyle: 'italic', color: 'var(--ouro)' }}>
+            <div
+              style={{
+                fontFamily: 'Cormorant Garamond, serif',
+                fontSize: 26,
+                fontStyle: 'italic',
+                fontWeight: 600,
+                color: 'var(--ouro)',
+              }}
+            >
               {formatarMoeda(totais.geral)}
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
             {linhas.map(({ key, label, cor }) => (
               <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
                 <span style={{ color: 'var(--texto-md)' }}>{label}</span>
-                <span style={{ fontWeight: 500, color: cor }}>{formatarMoeda(totais[key])}</span>
+                <span style={{ fontWeight: 500, color: cor, fontFamily: 'monospace', fontSize: 13 }}>
+                  {formatarMoeda(totais[key])}
+                </span>
               </div>
             ))}
           </div>
@@ -54,33 +67,45 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando, isMobile
           </button>
         </div>
       ) : (
-        /* Barra fixa — tablet e desktop: abaixo do conteúdo principal */
+        /* Barra desktop/tablet */
         <div
           style={{
-            background: 'var(--branco)',
-            borderTop: '1px solid var(--borda)',
-            padding: '10px 16px',
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            borderTop: '1px solid rgba(184, 146, 74, 0.2)',
+            padding: '10px 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             flexShrink: 0,
-            gap: 12,
+            gap: 16,
             flexWrap: 'wrap',
             overflowX: 'auto',
           }}
         >
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', minWidth: 0 }}>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', minWidth: 0, alignItems: 'center' }}>
             <div>
               <div className="label-padrao">TOTAL DO DIA</div>
-              <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', color: 'var(--ouro)' }}>
+              <div
+                style={{
+                  fontFamily: 'Cormorant Garamond, serif',
+                  fontSize: 22,
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: 'var(--ouro)',
+                }}
+              >
                 {formatarMoeda(totais.geral)}
               </div>
             </div>
-            <div style={{ width: 1, background: 'var(--borda-suave)', alignSelf: 'stretch' }} />
+            <div style={{ width: 1, background: 'rgba(184,146,74,0.2)', alignSelf: 'stretch' }} />
             {linhas.map(({ key, label, cor }) => (
               <div key={key}>
                 <div className="label-padrao">{label.toUpperCase()}</div>
-                <div style={{ fontSize: 13, fontWeight: 500, color: cor }}>{formatarMoeda(totais[key])}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: cor, fontFamily: 'monospace' }}>
+                  {formatarMoeda(totais[key])}
+                </div>
               </div>
             ))}
           </div>
@@ -98,18 +123,41 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando, isMobile
       {/* Modal de confirmação */}
       {confirmarModal && (
         <div className="modal-overlay" onClick={() => setConfirmarModal(false)}>
-          <div className="modal-box" style={{ padding: 28 }} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontStyle: 'italic', fontWeight: 400, marginBottom: 8 }}>
+          <div className="modal-box" style={{ padding: '28px 32px' }} onClick={(e) => e.stopPropagation()}>
+            <h2
+              style={{
+                fontFamily: 'Cormorant Garamond, serif',
+                fontSize: 24,
+                fontStyle: 'italic',
+                fontWeight: 600,
+                color: 'var(--texto)',
+                marginBottom: 8,
+              }}
+            >
               Fechar Caixa
             </h2>
-            <p style={{ fontSize: 13, color: 'var(--texto-md)', marginBottom: 20 }}>
+            <p style={{ fontSize: 13, color: 'var(--texto-md)', marginBottom: 22 }}>
               Confirme o fechamento do caixa de hoje.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-              {[{ label: 'Total Geral', valor: totais.geral, cor: 'var(--ouro)' }, ...linhas.map(l => ({ label: l.label, valor: totais[l.key], cor: l.cor }))].map(({ label, valor, cor }) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--borda-suave)', fontSize: 14 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
+              {[
+                { label: 'Total Geral', valor: totais.geral, cor: 'var(--ouro)' },
+                ...linhas.map((l) => ({ label: l.label, valor: totais[l.key], cor: l.cor })),
+              ].map(({ label, valor, cor }) => (
+                <div
+                  key={label}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '9px 0',
+                    borderBottom: '1px solid rgba(184,146,74,0.1)',
+                    fontSize: 14,
+                  }}
+                >
                   <span style={{ color: 'var(--texto-md)' }}>{label}</span>
-                  <span style={{ color: cor, fontWeight: 600 }}>{formatarMoeda(valor)}</span>
+                  <span style={{ color: cor, fontWeight: 600, fontFamily: 'monospace' }}>
+                    {formatarMoeda(valor)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -126,13 +174,44 @@ export default function BarraCaixa({ vendas, onFecharCaixa, carregando, isMobile
       {/* Modal de sucesso */}
       {fechamento && (
         <div className="modal-overlay" onClick={() => setFechamento(null)}>
-          <div className="modal-box" style={{ padding: 32, textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ fontSize: 40, marginBottom: 12 }}>✓</div>
-            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontStyle: 'italic', fontWeight: 400, color: 'var(--verde)', marginBottom: 8 }}>
-              Caixa fechado com sucesso!
+          <div
+            className="modal-box"
+            style={{ padding: '36px 32px', textAlign: 'center' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: '50%',
+                background: 'rgba(74,140,101,0.1)',
+                border: '2px solid var(--verde)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 16px',
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h2
+              style={{
+                fontFamily: 'Cormorant Garamond, serif',
+                fontSize: 24,
+                fontStyle: 'italic',
+                fontWeight: 600,
+                color: 'var(--verde)',
+                marginBottom: 8,
+              }}
+            >
+              Caixa fechado!
             </h2>
-            <p style={{ color: 'var(--texto-md)', fontSize: 13 }}>O resumo do dia foi salvo.</p>
-            <button className="btn-primario" style={{ marginTop: 24 }} onClick={() => setFechamento(null)}>Fechar</button>
+            <p style={{ color: 'var(--texto-md)', fontSize: 13, marginBottom: 24 }}>
+              O resumo do dia foi salvo com sucesso.
+            </p>
+            <button className="btn-primario" onClick={() => setFechamento(null)}>Fechar</button>
           </div>
         </div>
       )}

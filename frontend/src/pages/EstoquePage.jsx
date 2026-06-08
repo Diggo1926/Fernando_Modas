@@ -43,12 +43,12 @@ export default function EstoquePage() {
   const colunas = isMobile ? 2 : width < 1024 ? 3 : 4;
 
   return (
-    <div style={{ padding: isMobile ? 16 : 24 }}>
+    <div style={{ padding: isMobile ? 16 : 28 }}>
       {/* Barra de ações */}
       <div
         style={{
           display: 'flex',
-          gap: 12,
+          gap: 10,
           marginBottom: 20,
           flexWrap: 'wrap',
           alignItems: 'center',
@@ -104,12 +104,15 @@ export default function EstoquePage() {
               padding: '10px 16px',
               background: 'var(--vermelho-bg)',
               border: '1px solid var(--vermelho)',
-              borderRadius: 6,
+              borderRadius: 8,
               color: 'var(--vermelho)',
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'Montserrat, sans-serif',
               fontWeight: 500,
+              minHeight: 48,
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
             }}
             onClick={() => setModalLista(true)}
           >
@@ -143,15 +146,15 @@ export default function EstoquePage() {
 
       {/* Grid de produtos */}
       {carregando ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--texto-leve)', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', padding: '48px', color: 'var(--texto-leve)', fontSize: 13 }}>
           Carregando produtos...
         </div>
       ) : produtos.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '60px', color: 'var(--texto-leve)', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', padding: '64px', color: 'var(--texto-leve)', fontSize: 13 }}>
           Nenhum produto encontrado
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${colunas}, 1fr)`, gap: 16 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${colunas}, 1fr)`, gap: 14 }}>
           {produtos.map((p) => (
             <CardProduto
               key={p.id}

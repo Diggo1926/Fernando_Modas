@@ -19,55 +19,93 @@ export default function Topbar() {
   return (
     <header
       style={{
-        background: 'var(--preto)',
-        padding: isMobile ? '0 16px' : '0 24px',
-        height: 56,
+        background: 'rgba(247, 245, 242, 0.88)',
+        backdropFilter: 'blur(14px)',
+        WebkitBackdropFilter: 'blur(14px)',
+        padding: isMobile ? '0 16px' : '0 28px',
+        height: 60,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '1px solid #1a1a1a',
+        borderBottom: '1px solid rgba(184, 146, 74, 0.15)',
         flexShrink: 0,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <img
-          src="/logo-diva-modas.png"
-          alt="Diva Modas"
-          style={{
-            width: isMobile ? 32 : 36,
-            height: isMobile ? 32 : 36,
-            borderRadius: '50%',
-            objectFit: 'cover',
-            border: '2px solid #B8924A',
-            flexShrink: 0,
-          }}
-        />
-        <h1
-          style={{
-            fontFamily: 'Cormorant Garamond, serif',
-            fontSize: isMobile ? 20 : 22,
-            fontStyle: 'italic',
-            fontWeight: 300,
-            color: '#FFFFFF',
-            letterSpacing: 0.5,
-          }}
-        >
-          {titulo}
-        </h1>
+      {/* Esquerda: logo (mobile) + título */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {isMobile && (
+          <img
+            src="/logo-diva-modas.png"
+            alt="Diva Modas"
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '2px solid #B8924A',
+              flexShrink: 0,
+            }}
+          />
+        )}
+        <div>
+          <h1
+            style={{
+              fontFamily: 'Cormorant Garamond, serif',
+              fontSize: isMobile ? 22 : 24,
+              fontStyle: 'italic',
+              fontWeight: 600,
+              color: '#111111',
+              letterSpacing: 0.3,
+              lineHeight: 1,
+            }}
+          >
+            {titulo}
+          </h1>
+          {!isMobile && (
+            <div
+              style={{
+                height: 2,
+                width: 32,
+                background: 'linear-gradient(90deg, #B8924A 0%, transparent 100%)',
+                borderRadius: 1,
+                marginTop: 4,
+              }}
+            />
+          )}
+        </div>
       </div>
 
-      <span
-        style={{
-          fontFamily: 'Montserrat, sans-serif',
-          fontSize: 11,
-          fontWeight: 300,
-          color: 'var(--texto-leve)',
-          letterSpacing: 0.5,
-          textTransform: isMobile ? 'none' : 'capitalize',
-        }}
-      >
-        {hoje}
-      </span>
+      {/* Direita: nome da loja + data */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        {!isMobile && (
+          <span
+            style={{
+              fontFamily: 'Montserrat, sans-serif',
+              fontSize: 11,
+              fontWeight: 600,
+              color: '#B8924A',
+              letterSpacing: 0.5,
+            }}
+          >
+            Diva Modas
+          </span>
+        )}
+        {!isMobile && (
+          <span style={{ color: 'rgba(184,146,74,0.4)', fontSize: 11 }}>·</span>
+        )}
+        <span
+          style={{
+            fontFamily: 'Montserrat, sans-serif',
+            fontSize: 11,
+            fontWeight: 300,
+            color: '#888888',
+            letterSpacing: 0.3,
+            textTransform: 'capitalize',
+          }}
+        >
+          {hoje}
+        </span>
+      </div>
     </header>
   );
 }

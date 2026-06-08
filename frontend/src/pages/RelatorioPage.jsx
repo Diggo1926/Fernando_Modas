@@ -76,7 +76,7 @@ export default function RelatorioPage() {
   }
 
   return (
-    <div style={{ padding: isMobile ? 16 : 24 }}>
+    <div style={{ padding: isMobile ? 16 : 28 }}>
       {/* Filtros de período */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap', alignItems: 'center' }}>
         {PERIODOS.map(({ key, label }) => (
@@ -99,7 +99,11 @@ export default function RelatorioPage() {
         )}
 
         {resumo && (
-          <button onClick={exportarPDF} style={{ marginLeft: isMobile ? 0 : 'auto', padding: '10px 18px', background: 'var(--ouro-bg)', border: '1px solid var(--ouro)', borderRadius: 6, color: 'var(--ouro)', fontSize: 13, cursor: 'pointer', fontFamily: 'Montserrat, sans-serif', fontWeight: 500, minHeight: 48 }}>
+          <button
+            onClick={exportarPDF}
+            className="btn-secundario"
+            style={{ marginLeft: isMobile ? 0 : 'auto', padding: '10px 20px', whiteSpace: 'nowrap' }}
+          >
             Exportar PDF
           </button>
         )}
@@ -121,8 +125,8 @@ export default function RelatorioPage() {
       {detalheAberto && fechamentoDetalhe && (
         <div className="modal-overlay" onClick={() => setDetalheAberto(null)}>
           <div className="modal-box" style={{ maxWidth: 640 }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--borda-suave)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 20, fontStyle: 'italic', fontWeight: 400 }}>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(184,146,74,0.15)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 22, fontStyle: 'italic', fontWeight: 600, color: 'var(--texto)' }}>
                 Fechamento — {formatarData(fechamentoDetalhe.data)}
               </h2>
               <button onClick={() => setDetalheAberto(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 20, color: 'var(--texto-leve)', minWidth: 36, minHeight: 36 }}>×</button>
@@ -137,7 +141,7 @@ export default function RelatorioPage() {
                   { label: 'Débito',   valor: fechamentoDetalhe.totalDebito,   cor: 'var(--roxo)'  },
                   { label: 'Crédito',  valor: fechamentoDetalhe.totalCredito,  cor: 'var(--azul)'  },
                 ].map(({ label, valor, cor }) => (
-                  <div key={label} style={{ padding: '10px 14px', background: 'var(--bg)', borderRadius: 6 }}>
+                  <div key={label} style={{ padding: '10px 14px', background: 'rgba(247,245,242,0.7)', border: '1px solid rgba(184,146,74,0.1)', borderRadius: 10 }}>
                     <div className="label-padrao">{label}</div>
                     <div style={{ color: cor, fontWeight: 600, fontSize: 14 }}>
                       {typeof valor === 'number' ? formatarMoeda(valor) : valor}
@@ -151,7 +155,7 @@ export default function RelatorioPage() {
                 {fechamentoDetalhe.vendas?.map((v) => {
                   const nomes = v.items?.map((i) => i.produto?.nome).filter(Boolean).join(', ') || '—';
                   return (
-                    <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--bg)', borderRadius: 4, fontSize: 12 }}>
+                    <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'rgba(247,245,242,0.7)', border: '1px solid rgba(184,146,74,0.08)', borderRadius: 8, fontSize: 12 }}>
                       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{nomes}</span>
                       <span style={{ color: 'var(--ouro)', marginLeft: 12, flexShrink: 0 }}>{formatarMoeda(v.total)}</span>
                     </div>
